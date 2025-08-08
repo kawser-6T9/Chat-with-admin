@@ -95,16 +95,16 @@
 
     loginBtn.addEventListener('click', async () => {
       errorMsg.textContent = '';
-      const name = usernameInput.value.trim();
+      const userName = usernameInput.value.trim();
       const pass = passwordInput.value.trim();
 
-      if (!name || !pass) {
+      if (!userName || !pass) {
         errorMsg.textContent = 'নাম ও পাসওয়ার্ড অবশ্যই দিতে হবে।';
         return;
       }
 
       try {
-        const userRef = doc(db, 'users', name);
+        const userRef = doc(db, 'users', userName);
         const userSnap = await getDoc(userRef);
 
         if (userSnap.exists()) {
@@ -133,7 +133,7 @@
           await updateDoc(userRef, { loginTime: new Date().toLocaleString() });
 
           // ইউজারের নাম localStorage-এ রাখো
-          localStorage.setItem('userName', name);
+          localStorage.setItem('userName', userName);
 
           // চ্যাট পেজে রিডাইরেক্ট করো
           window.location.href = 'chat.html';

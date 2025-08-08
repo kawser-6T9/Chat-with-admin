@@ -3,110 +3,128 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>প্রফেশনাল চ্যাট অ্যাপ</title>
+<title>Pakhi-chat</title>
 <style>
-  /* Reset */
+  /* Basic Reset */
   * {
     box-sizing: border-box;
   }
   body, html {
     margin:0; padding:0; height:100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f9fafb;
+    background: linear-gradient(135deg, #f0f4f8 25%, #d9e2ec 100%);
     display: flex;
     flex-direction: column;
-    height: 100vh;
   }
-  
+
   header {
-    background: #2563eb;
-    color: white;
+    background: #1e40af;
+    color: #e0e7ff;
     padding: 15px 20px;
     font-weight: 700;
-    font-size: 20px;
+    font-size: 24px;
     user-select:none;
+    box-shadow: 0 2px 6px rgba(30, 64, 175, 0.6);
   }
-  
+
   #messages {
     flex: 1;
     overflow-y: auto;
-    padding: 15px;
-    background: #e5e7eb;
+    padding: 15px 10px 10px 10px;
+    background: url('https://www.transparenttextures.com/patterns/cubes.png');
+    /* subtle cubes background texture */
   }
 
   .message {
-    background: white;
+    position: relative;
+    max-width: 75%;
     margin-bottom: 12px;
     padding: 10px 15px;
-    border-radius: 12px;
-    max-width: 75%;
-    position: relative;
+    border-radius: 15px;
     word-break: break-word;
+    box-shadow: 0 3px 8px rgb(0 0 0 / 0.1);
+    transition: background-color 0.3s ease;
   }
 
+  /* আলাদা কালার */
   .message.self {
+    margin-left: auto;
     background: #2563eb;
     color: white;
-    margin-left: auto;
+    border-bottom-right-radius: 4px;
+  }
+  .message.other {
+    background: #f3f4f6;
+    color: #111;
+    border-bottom-left-radius: 4px;
   }
 
-  .message .sender {
-    font-size: 12px;
+  /* নাম এবং টাইমস্ট্যাম্প */
+  .sender-name {
     font-weight: 600;
-    margin-bottom: 6px;
+    font-size: 12px;
     opacity: 0.7;
+    margin-bottom: 5px;
+  }
+  .message-text {
+    font-size: 16px;
+  }
+  .timestamp {
+    font-size: 10px;
+    color: #666;
+    margin-top: 5px;
+    text-align: right;
   }
 
+  /* ছবি */
   .message img {
     max-width: 100%;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-top: 6px;
     cursor: pointer;
   }
 
-  .replyBox {
-    font-size: 12px;
-    background: #dbeafe;
+  /* রিপ্লাই বক্স */
+  .reply-box {
+    background: rgba(0, 0, 0, 0.08);
     border-left: 3px solid #2563eb;
     padding-left: 8px;
-    margin-bottom: 6px;
-    color: #2563eb;
+    font-size: 13px;
+    margin-bottom: 5px;
     cursor: pointer;
+    color: #2563eb;
+    user-select:none;
   }
 
-  .actions {
+  /* ডিলেট বাটন */
+  .delete-btn {
     position: absolute;
-    bottom: 4px;
+    top: 6px;
     right: 8px;
-    display: flex;
-    gap: 8px;
-  }
-
-  .actions button {
     background: transparent;
     border: none;
-    color: #555;
+    font-size: 18px;
     cursor: pointer;
-    font-size: 14px;
-    opacity: 0.7;
+    color: inherit;
+    opacity: 0.6;
     transition: opacity 0.3s ease;
   }
-
-  .actions button:hover {
+  .delete-btn:hover {
     opacity: 1;
   }
 
+  /* ইনপুট এরিয়া */
   #inputArea {
     display: flex;
     padding: 10px 15px;
     background: white;
-    box-shadow: 0 -1px 4px rgb(0 0 0 / 0.1);
+    box-shadow: 0 -1px 6px rgba(0,0,0,0.1);
     align-items: center;
   }
 
   #messageInput {
     flex: 1;
-    padding: 12px 15px;
+    padding: 12px 18px;
     border-radius: 25px;
     border: 1px solid #ddd;
     font-size: 16px;
@@ -122,6 +140,8 @@
     cursor: pointer;
     font-size: 24px;
     color: #2563eb;
+    margin-right: 12px;
+    user-select:none;
   }
 
   #sendBtn {
@@ -142,7 +162,7 @@
     background: #1d4ed8;
   }
 
-  /* Scrollbar styling */
+  /* Scrollbar */
   #messages::-webkit-scrollbar {
     width: 8px;
   }
@@ -154,17 +174,20 @@
   /* Responsive */
   @media (max-width: 600px) {
     header {
-      font-size: 18px;
+      font-size: 20px;
     }
     #messageInput {
       font-size: 14px;
+    }
+    #sendBtn {
+      padding: 10px 14px;
     }
   }
 </style>
 </head>
 <body>
 
-<header>সুপার প্রফেশনাল চ্যাট অ্যাপ</header>
+<header>Pakhi-chat</header>
 
 <div id="messages"></div>
 
@@ -192,12 +215,11 @@
     appId: "1:604406589995:web:8baddc0c5752386ffb586e"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const storage = getStorage(app);
 
-  // ইউজারের আইডি ও নাম (localStorage থেকে নাও)
+  // User info - LocalStorage থেকে নাও
   const userId = localStorage.getItem('userId') || `user_${Math.floor(Math.random()*100000)}`;
   const userName = localStorage.getItem('userName') || 'Anonymous';
 
@@ -210,13 +232,17 @@
   const imageInput = document.getElementById('imageInput');
 
   let isUploading = false;
+  let replyTo = null;  // reply মেসেজ
 
-  // Send Button Active/Inactive
-  messageInput.addEventListener('input', () => {
+  // Send button Enable/Disable
+  function updateSendBtn() {
     sendBtn.disabled = !messageInput.value.trim() && !imageInput.files.length && !isUploading;
-  });
+  }
 
-  // Listen Firestore messages realtime
+  messageInput.addEventListener('input', updateSendBtn);
+  imageInput.addEventListener('change', updateSendBtn);
+
+  // Real-time মেসেজ দেখানো
   const messagesCol = collection(db, 'messages');
   const q = query(messagesCol, orderBy('createdAt', 'asc'));
 
@@ -226,25 +252,37 @@
       const msg = docSnap.data();
       const id = docSnap.id;
 
+      // মেসেজ div
       const msgDiv = document.createElement('div');
       msgDiv.classList.add('message');
-      if (msg.senderId === userId) msgDiv.classList.add('self');
+      msgDiv.classList.add(msg.senderId === userId ? 'self' : 'other');
 
-      // Sender name
+      // sender name
       const senderDiv = document.createElement('div');
-      senderDiv.classList.add('sender');
+      senderDiv.classList.add('sender-name');
       senderDiv.textContent = msg.senderName || 'Unknown';
       msgDiv.appendChild(senderDiv);
 
-      // Text message
-      if (msg.text) {
+      // reply box দেখানো
+      if(msg.replyTo){
+        const replyDiv = document.createElement('div');
+        replyDiv.classList.add('reply-box');
+        replyDiv.textContent = `রিপ্লাই: ${msg.replyTo.text || (msg.replyTo.imageUrl ? 'ছবি' : '')}`;
+        replyDiv.title = "রিপ্লাই মেসেজ দেখুন";
+        replyDiv.onclick = () => alert(`রিপ্লাই মেসেজ:\n\n${msg.replyTo.text || '[ছবি]'}`);
+        msgDiv.appendChild(replyDiv);
+      }
+
+      // মেসেজ টেক্সট
+      if(msg.text){
         const textDiv = document.createElement('div');
+        textDiv.classList.add('message-text');
         textDiv.textContent = msg.text;
         msgDiv.appendChild(textDiv);
       }
 
-      // Image message
-      if (msg.imageUrl) {
+      // ছবি থাকলে
+      if(msg.imageUrl){
         const img = document.createElement('img');
         img.src = msg.imageUrl;
         img.alt = "Image";
@@ -252,55 +290,62 @@
         msgDiv.appendChild(img);
       }
 
-      // Delete button only for own messages
-      if (msg.senderId === userId) {
+      // টাইমস্ট্যাম্প
+      const timeDiv = document.createElement('div');
+      timeDiv.classList.add('timestamp');
+      timeDiv.textContent = msg.createdAt ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString('bn-BD', {hour:'2-digit', minute:'2-digit'}) : '';
+      msgDiv.appendChild(timeDiv);
+
+      // ডিলেট বাটন, শুধু নিজের মেসেজে
+      if(msg.senderId === userId){
         const delBtn = document.createElement('button');
-        delBtn.textContent = '🗑️';
+        delBtn.classList.add('delete-btn');
         delBtn.title = 'মেসেজ ডিলেট করো';
-        delBtn.style.position = 'absolute';
-        delBtn.style.top = '6px';
-        delBtn.style.right = '6px';
-        delBtn.style.background = 'transparent';
-        delBtn.style.border = 'none';
-        delBtn.style.color = msgDiv.classList.contains('self') ? 'white' : '#555';
-        delBtn.style.fontSize = '14px';
-        delBtn.style.cursor = 'pointer';
+        delBtn.innerHTML = '🗑️';
         delBtn.onclick = async () => {
-          if (confirm('তুমি কি মেসেজটি মুছে ফেলতে চাও?')) {
+          if(confirm('তুমি কি মেসেজটি মুছে ফেলতে চাও?')){
             await deleteDoc(doc(db, 'messages', id));
           }
         };
-        msgDiv.style.position = 'relative';
         msgDiv.appendChild(delBtn);
       }
+
+      // ক্লিক করলে reply set হবে
+      msgDiv.onclick = () => {
+        if(msg.senderId !== userId) return; // শুধুমাত্র নিজের মেসেজে রিপ্লাই দিতে পারবে না (প্রয়োজনমত পরিবর্তন করো)
+        replyTo = { id, text: msg.text, imageUrl: msg.imageUrl };
+        messageInput.focus();
+        messageInput.placeholder = 'রিপ্লাই লিখুন... (রিপ্লাই বাতিল করতে ESC চাপুন)';
+      };
 
       messagesDiv.appendChild(msgDiv);
     });
 
+    // নিচে স্ক্রল
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    updateSendBtn();
   });
 
-  // Send message function
-  async function sendMessage() {
-    if (isUploading) return;
+  // মেসেজ পাঠানোর ফাংশন
+  async function sendMessage(){
+    if(isUploading) return;
 
     const text = messageInput.value.trim();
-    if (!text && !imageInput.files.length) return;
+    if(!text && !imageInput.files.length) return;
 
     sendBtn.disabled = true;
 
     let imageUrl = null;
-
-    if (imageInput.files.length) {
+    if(imageInput.files.length){
       isUploading = true;
       const file = imageInput.files[0];
       const storageRef = ref(storage, `chatImages/${Date.now()}_${file.name}`);
-      try {
+      try{
         await uploadBytes(storageRef, file);
         imageUrl = await getDownloadURL(storageRef);
-      } catch (error) {
-        alert('ছবি আপলোড করতে সমস্যা হয়েছে');
-        console.error(error);
+      }catch(err){
+        alert('ছবি আপলোড করতে সমস্যা হয়েছে');
+        console.error(err);
       }
       isUploading = false;
     }
@@ -310,28 +355,30 @@
       imageUrl: imageUrl || null,
       senderId: userId,
       senderName: userName,
+      replyTo: replyTo || null,
       createdAt: serverTimestamp()
     });
 
+    // রিপ্লাই ক্লিয়ার
+    replyTo = null;
     messageInput.value = '';
+    messageInput.placeholder = 'এখানে লিখুন...';
     imageInput.value = null;
-    sendBtn.disabled = true;
+    updateSendBtn();
   }
 
-  // Send btn click event
   sendBtn.addEventListener('click', sendMessage);
 
-  // Enter key to send message
   messageInput.addEventListener('keypress', e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if(e.key === 'Enter' && !e.shiftKey){
       e.preventDefault();
       sendMessage();
     }
-  });
-
-  // Image input change to activate send btn
-  imageInput.addEventListener('change', () => {
-    sendBtn.disabled = !messageInput.value.trim() && !imageInput.files.length;
+    else if(e.key === 'Escape'){
+      // ESC প্রেস করলে রিপ্লাই বাতিল
+      replyTo = null;
+      messageInput.placeholder = 'এখানে লিখুন...';
+    }
   });
 </script>
 

@@ -3,395 +3,181 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>চ্যাট অ্যাপ - ইউজার লগইন ও চ্যাট</title>
-
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-
+<title>চ্যাট অ্যাপ - ইউজার লগইন</title>
 <style>
-  * {
-    box-sizing: border-box;
-  }
+  /* মোবাইল ফ্রেন্ডলি সুন্দর স্টাইল */
   body, html {
-    margin: 0; padding: 0; height: 100%;
+    margin:0; padding:0; height:100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f3f4f6;
+    background: #f0f2f5;
     display: flex; justify-content: center; align-items: center;
   }
-  #loginPage, #chatPage {
+  #loginBox {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    width: 95vw;
-    max-width: 450px;
-    padding: 25px 20px;
-  }
-
-  #loginPage {
-    display: flex;
-    flex-direction: column;
-  }
-
-  h2 {
-    margin-bottom: 20px;
+    padding: 30px 25px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 400px;
     text-align: center;
+  }
+  #loginBox h2 {
+    margin-bottom: 25px;
     color: #2563eb;
   }
-
-  input[type="text"], input[type="password"] {
+  input[type=text], input[type=password] {
     width: 100%;
-    padding: 12px 14px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    padding: 12px 15px;
+    margin-bottom: 18px;
     font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
     outline: none;
-    transition: border-color 0.3s;
+    transition: border-color 0.3s ease;
   }
-  input[type="text"]:focus, input[type="password"]:focus {
+  input[type=text]:focus, input[type=password]:focus {
     border-color: #2563eb;
   }
-
   button {
     width: 100%;
+    padding: 14px 0;
+    font-size: 18px;
     background: #2563eb;
     color: white;
-    font-weight: 700;
-    font-size: 18px;
-    padding: 12px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
+    font-weight: 700;
     transition: background-color 0.3s ease;
   }
   button:hover {
-    background: #1e40af;
+    background: #1d4ed8;
   }
-
   #errorMsg {
     color: red;
-    text-align: center;
     margin-bottom: 15px;
     min-height: 20px;
   }
-
-  /* Chat page styles */
-  #chatPage {
-    display: none;
-    height: 90vh;
-    flex-direction: column;
+  #infoText {
+    font-size: 14px;
+    margin-top: 15px;
+    color: #555;
   }
-  #chatHeader {
-    background: #2563eb;
-    color: white;
-    padding: 15px 20px;
-    font-weight: 700;
-    font-size: 20px;
-    border-radius: 12px 12px 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  #logoutBtn {
-    background: #ef4444;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  #logoutBtn:hover {
-    background: #b91c1c;
-  }
-  #messageContainer {
-    flex: 1;
-    background: #e0e7ff;
-    overflow-y: auto;
-    padding: 15px 20px;
-    border-radius: 0 0 12px 12px;
-    scroll-behavior: smooth;
-  }
-
-  .message {
-    background: white;
-    padding: 12px 16px;
-    margin-bottom: 12px;
-    max-width: 80%;
-    border-radius: 12px;
-    word-break: break-word;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
-  }
-  .myMessage {
-    background: #2563eb;
-    color: white;
-    margin-left: auto;
-  }
-  .message strong {
-    display: block;
-    margin-bottom: 6px;
-  }
-
-  #inputArea {
-    display: flex;
-    gap: 10px;
-    padding: 10px 0;
-  }
-  #messageInput {
-    flex: 1;
-    padding: 12px 14px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 16px;
-    outline: none;
-  }
-  #messageInput:focus {
-    border-color: #2563eb;
-  }
-  #sendBtn, #imageUploadBtn {
-    background: #2563eb;
-    border: none;
-    padding: 12px 15px;
-    border-radius: 8px;
-    color: white;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  #sendBtn:hover, #imageUploadBtn:hover {
-    background: #1e40af;
-  }
-  #imageUpload {
-    display: none;
-  }
-  #imagePreview {
-    max-width: 100%;
+  #contactLinks {
     margin-top: 10px;
-    border-radius: 8px;
-    display: none;
+    font-size: 14px;
+  }
+  #contactLinks a {
+    color: #2563eb;
+    text-decoration: none;
+    margin: 0 5px;
+  }
+  #contactLinks a:hover {
+    text-decoration: underline;
   }
 </style>
 </head>
 <body>
 
-<!-- Login Page -->
-<div id="loginPage">
-  <h2>চ্যাটে লগইন করুন</h2>
+<div id="loginBox">
+  <h2>চ্যাট অ্যাপে লগইন</h2>
   <div id="errorMsg"></div>
-  <input type="text" id="userName" placeholder="তোমার নাম" autocomplete="off" />
-  <input type="password" id="userPass" placeholder="পাসওয়ার্ড" autocomplete="off" />
-  <button id="loginBtn">লগইন</button>
+  <input type="text" id="userName" placeholder="আপনার নাম লিখুন" autocomplete="off" />
+  <input type="password" id="userPass" placeholder="পাসওয়ার্ড দিন" autocomplete="off" />
+  <button id="loginBtn">লগইন করুন</button>
+  <div id="infoText">
+    নতুন ইউজার? আপনার নাম দিয়ে লগইন করলে অনুমোদনের জন্য রিকোয়েস্ট যাবে। অনুমোদিত হলে আপনি চ্যাট করতে পারবেন।
+  </div>
+  <div id="contactLinks">
+    সাহায্যের জন্য: 
+    <a href="https://m.me/kawser.ahmed.88690" target="_blank">Messenger</a> |
+    <a href="https://wa.me/+8801750868119" target="_blank">WhatsApp</a>
+  </div>
 </div>
 
-<!-- Chat Page -->
-<div id="chatPage">
-  <div id="chatHeader">
-    <div>চ্যাট অ্যাপ</div>
-    <button id="logoutBtn">লগআউট</button>
-  </div>
-
-  <div id="messageContainer"></div>
-
-  <div id="inputArea">
-    <input type="text" id="messageInput" placeholder="মেসেজ লিখুন..." />
-    <button id="sendBtn">পাঠান</button>
-    <button id="imageUploadBtn">ছবি</button>
-    <input type="file" id="imageUpload" accept="image/*" />
-  </div>
-  <img id="imagePreview" />
-</div>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 <script>
-  // Firebase Configuration - তোমার নিজস্ব Firebase Config বসাও এখানে
+  // Firebase Config (তোমার নিজস্ব config বসাও)
   const firebaseConfig = {
     apiKey: "AIzaSyDJ_KagqCQzTavn4SU81g9XV29k76cNLF8",
     authDomain: "pakhi-e3aad.firebaseapp.com",
     projectId: "pakhi-e3aad",
-    storageBucket: "pakhi-e3aad.firebasestorage.app",
+    storageBucket: "pakhi-e3aad.appspot.com",
     messagingSenderId: "235336322769",
     appId: "1:235336322769:web:6400ff0350ea3c60e2fff0"
   };
-
-  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // Elements
-  const loginPage = document.getElementById('loginPage');
-  const chatPage = document.getElementById('chatPage');
+  const loginBtn = document.getElementById('loginBtn');
   const errorMsg = document.getElementById('errorMsg');
   const userNameInput = document.getElementById('userName');
   const userPassInput = document.getElementById('userPass');
-  const loginBtn = document.getElementById('loginBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const messageContainer = document.getElementById('messageContainer');
-  const messageInput = document.getElementById('messageInput');
-  const sendBtn = document.getElementById('sendBtn');
-  const imageUploadBtn = document.getElementById('imageUploadBtn');
-  const imageUpload = document.getElementById('imageUpload');
-  const imagePreview = document.getElementById('imagePreview');
-
-  let currentUser = null;
-
-  // Show error message for 4 seconds
-  function showError(msg) {
-    errorMsg.textContent = msg;
-    setTimeout(() => errorMsg.textContent = '', 4000);
-  }
-
-  // Login function
-  async function loginUser(name, pass) {
-    const docRef = db.collection('users').doc(name);
-    const doc = await docRef.get();
-    const now = new Date();
-    const loginTime = now.toLocaleString('bn-BD', { hour12: true });
-
-    if (!doc.exists) {
-      // New user registration pending approval
-      await docRef.set({
-        name: name,
-        pass: pass,
-        banned: false,
-        approved: false,
-        loginTime: loginTime
-      });
-      alert('তোমার রিকোয়েস্ট জমা পড়েছে। অ্যাডমিন অনুমোদন দিলে লগইন করতে পারবে।');
-      return false;
-    } else {
-      const data = doc.data();
-      if (data.pass !== pass) {
-        alert('পাসওয়ার্ড ভুল!');
-        return false;
-      }
-      if (data.banned) {
-        alert('তুমি ব্যান হয়েছো, লগইন করতে পারবে না।');
-        return false;
-      }
-      if (!data.approved) {
-        alert('অ্যাডমিন তোমার অ্যাকাউন্ট অনুমোদন করেননি। অপেক্ষা করো।');
-        return false;
-      }
-      // Update loginTime on each successful login
-      await docRef.update({ loginTime: loginTime });
-      return true;
-    }
-  }
-
-  // Show chat screen
-  function showChat() {
-    loginPage.style.display = 'none';
-    chatPage.style.display = 'flex';
-    messageInput.focus();
-  }
-  // Show login screen
-  function showLogin() {
-    chatPage.style.display = 'none';
-    loginPage.style.display = 'flex';
-  }
-
-  // Auto scroll chat to bottom
-  function scrollToBottom() {
-    messageContainer.scrollTop = messageContainer.scrollHeight;
-  }
-
-  // Load messages realtime
-  function loadMessages() {
-    db.collection('messages').orderBy('createdAt')
-      .limit(100)
-      .onSnapshot(snapshot => {
-        messageContainer.innerHTML = '';
-        snapshot.forEach(doc => {
-          const msg = doc.data();
-          const div = document.createElement('div');
-          div.classList.add('message');
-          if (msg.sender === currentUser) div.classList.add('myMessage');
-          div.innerHTML = `<strong>${msg.sender}</strong>: `;
-
-          if (msg.imageUrl) {
-            const img = document.createElement('img');
-            img.src = msg.imageUrl;
-            img.style.maxWidth = '200px';
-            img.style.borderRadius = '8px';
-            div.appendChild(img);
-          } else {
-            div.innerHTML += msg.text;
-          }
-
-          messageContainer.appendChild(div);
-        });
-        scrollToBottom();
-      });
-  }
-
-  // Send text message
-  async function sendMessage() {
-    const text = messageInput.value.trim();
-    if (!text) return;
-    await db.collection('messages').add({
-      sender: currentUser,
-      text: text,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-    messageInput.value = '';
-  }
-
-  // Send image message (base64 encoded)
-  async function sendImage(base64) {
-    await db.collection('messages').add({
-      sender: currentUser,
-      imageUrl: base64,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-  }
-
-  // Event Listeners
 
   loginBtn.onclick = async () => {
+    errorMsg.textContent = '';
     const name = userNameInput.value.trim();
     const pass = userPassInput.value.trim();
-    if (!name || !pass) {
-      showError('দয়া করে নাম ও পাসওয়ার্ড উভয় দিন।');
+
+    if (!name) {
+      errorMsg.textContent = 'দয়া করে নাম লিখুন।';
       return;
     }
-    const loggedIn = await loginUser(name, pass);
-    if (loggedIn) {
-      currentUser = name;
-      showChat();
-      loadMessages();
+    if (!pass) {
+      errorMsg.textContent = 'দয়া করে পাসওয়ার্ড দিন।';
+      return;
+    }
+
+    try {
+      // ইউজার চেক করবো অনুমোদিত কিনা
+      const userDoc = await db.collection('users').doc(name).get();
+
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+
+        if (userData.banned) {
+          errorMsg.textContent = 'আপনি ব্যানড হয়েছেন। যোগাযোগ করুন অ্যাডমিনের সাথে।';
+          return;
+        }
+
+        if (!userData.approved) {
+          errorMsg.textContent = 'আপনার রিকোয়েস্ট এখনও অনুমোদিত হয়নি। অপেক্ষা করুন।';
+          return;
+        }
+
+        // পাসওয়ার্ড চেক
+        if (userData.password !== pass) {
+          errorMsg.textContent = 'পাসওয়ার্ড ভুল হয়েছে।';
+          return;
+        }
+
+        // সফল লগইন, লোকালস্টোরেজে রাখি
+        localStorage.setItem('fdUser', name);
+        alert('লগইন সফল! এখন চ্যাট পেজে নিয়ে যাওয়া হচ্ছে...');
+        window.location.href = 'chat.html';
+
+      } else {
+        // নতুন ইউজার, রিকোয়েস্ট পাঠাও
+        await db.collection('users').doc(name).set({
+          password: pass,
+          approved: false,
+          banned: false,
+          requestedAt: new Date()
+        });
+        errorMsg.style.color = 'green';
+        errorMsg.textContent = 'নতুন রিকোয়েস্ট পাঠানো হয়েছে, অনুমোদনের জন্য অপেক্ষা করুন। অ্যাডমিন অনুমোদন দিলে লগইন করতে পারবেন।';
+      }
+    } catch (error) {
+      console.error(error);
+      errorMsg.textContent = 'কিছু সমস্যা হয়েছে, আবার চেষ্টা করুন।';
     }
   };
 
-  logoutBtn.onclick = () => {
-    currentUser = null;
-    showLogin();
-    userNameInput.value = '';
-    userPassInput.value = '';
-  };
-
-  sendBtn.onclick = sendMessage;
-  messageInput.addEventListener('keyup', e => {
-    if (e.key === 'Enter') sendMessage();
-  });
-
-  imageUploadBtn.onclick = () => imageUpload.click();
-
-  imageUpload.addEventListener('change', () => {
-    const file = imageUpload.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = e => {
-      imagePreview.src = e.target.result;
-      imagePreview.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-
-    reader.onloadend = async () => {
-      await sendImage(reader.result);
-      imagePreview.style.display = 'none';
-      imageUpload.value = '';
-    };
+  // ইন্টার দিয়ে লগইন
+  userPassInput.addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') loginBtn.click();
   });
 
 </script>

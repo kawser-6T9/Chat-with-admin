@@ -1,242 +1,226 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>চ্যাট পেজ</title>
-<style>
-  /* মোবাইল ফ্রেন্ডলি ও সুন্দর */
-  body, html {
-    margin: 0; padding: 0; height: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f0f2f5;
-    display: flex; flex-direction: column;
-  }
-  header {
-    background: #2563eb;
-    color: white;
-    padding: 15px 20px;
-    font-weight: 700;
-    font-size: 20px;
-    user-select: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  header button {
-    background: #f87171;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    font-weight: 700;
-  }
-  header button:hover {
-    background: #dc2626;
-  }
-  #chatArea {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px 10px;
-    background: white;
-    box-sizing: border-box;
-  }
-  .message {
-    margin-bottom: 12px;
-    max-width: 80%;
-    padding: 10px 15px;
-    border-radius: 15px;
-    word-wrap: break-word;
-    font-size: 16px;
-  }
-  .myMsg {
-    background: #2563eb;
-    color: white;
-    margin-left: auto;
-    border-bottom-right-radius: 0;
-  }
-  .otherMsg {
-    background: #e5e7eb;
-    color: #111;
-    margin-right: auto;
-    border-bottom-left-radius: 0;
-  }
-  #sendArea {
-    display: flex;
-    padding: 10px 15px;
-    background: #fff;
-    box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
-  }
-  #msgInput {
-    flex: 1;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 25px;
-    outline: none;
-  }
-  #sendBtn {
-    background: #2563eb;
-    border: none;
-    color: white;
-    font-weight: 700;
-    font-size: 16px;
-    padding: 10px 20px;
-    margin-left: 10px;
-    border-radius: 25px;
-    cursor: pointer;
-  }
-  #sendBtn:hover {
-    background: #1e40af;
-  }
-  #imageInput {
-    display: none;
-  }
-  label[for="imageInput"] {
-    background: #2563eb;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 25px;
-    cursor: pointer;
-    margin-left: 10px;
-    user-select: none;
-  }
-  /* Scrollbar customization */
-  #chatArea::-webkit-scrollbar {
-    width: 6px;
-  }
-  #chatArea::-webkit-scrollbar-thumb {
-    background-color: #2563eb;
-    border-radius: 3px;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>চ্যাট রুম</title>
+  <style>
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      display: flex; flex-direction: column;
+    }
+    header {
+      background: #2563eb;
+      color: white;
+      padding: 15px 20px;
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+      user-select: none;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    #chatBox {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      background: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .message {
+      max-width: 75%;
+      padding: 10px 15px;
+      border-radius: 20px;
+      word-wrap: break-word;
+      font-size: 16px;
+      line-height: 1.3;
+    }
+    .message.self {
+      align-self: flex-end;
+      background: #2563eb;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    .message.other {
+      align-self: flex-start;
+      background: white;
+      color: #111;
+      border-bottom-left-radius: 4px;
+    }
+    .message img {
+      max-width: 150px;
+      border-radius: 12px;
+      margin-top: 5px;
+      cursor: pointer;
+    }
+    #inputArea {
+      display: flex;
+      padding: 10px 15px;
+      background: white;
+      border-top: 1px solid #ccc;
+    }
+    #inputArea input[type="text"] {
+      flex: 1;
+      padding: 10px 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 25px;
+      outline: none;
+    }
+    #inputArea button, #inputArea label {
+      margin-left: 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      user-select: none;
+    }
+    #inputArea input[type="file"] {
+      display: none;
+    }
+    #logoutBtn {
+      position: fixed;
+      top: 10px;
+      right: 15px;
+      background: #f87171;
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      z-index: 110;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <div id="userNameDisplay">স্বাগতম, ইউজার</div>
-  <button id="logoutBtn">লগআউট</button>
-</header>
+<header>চ্যাট রুম</header>
+<button id="logoutBtn" title="লগআউট">লগআউট</button>
 
-<div id="chatArea"></div>
+<div id="chatBox"></div>
 
-<div id="sendArea">
+<div id="inputArea">
   <input type="text" id="msgInput" placeholder="মেসেজ লিখুন..." autocomplete="off" />
-  <label for="imageInput">📷</label>
-  <input type="file" id="imageInput" accept="image/*" />
-  <button id="sendBtn">পাঠাও</button>
+  <label for="imgUpload" title="ছবি পাঠান">📷</label>
+  <input type="file" id="imgUpload" accept="image/*" />
+  <button id="sendBtn" title="পাঠান">➡️</button>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc,
+    query, orderBy, onSnapshot, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-<script>
-  // Firebase Config (তোমার config বসাও)
+  // Firebase Config
   const firebaseConfig = {
-    apiKey: "AIzaSyDJ_KagqCQzTavn4SU81g9XV29k76cNLF8",
-    authDomain: "pakhi-e3aad.firebaseapp.com",
-    projectId: "pakhi-e3aad",
-    storageBucket: "pakhi-e3aad.appspot.com",
-    messagingSenderId: "235336322769",
-    appId: "1:235336322769:web:6400ff0350ea3c60e2fff0"
+    apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
+    authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
+    projectId: "chat-with-admin-1ca1a",
+    storageBucket: "chat-with-admin-1ca1a.appspot.com",
+    messagingSenderId: "604406589995",
+    appId: "1:604406589995:web:8baddc0c5752386ffb586e"
   };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
 
-  // ইউজার নাম লোকালস্টোরেজ থেকে নেবে
-  const currentUser = localStorage.getItem('fdUser');
-  if (!currentUser) {
-    alert('লগইন করা নেই, লগইন পেজে নিয়ে যাওয়া হচ্ছে...');
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ইউজার নাম localStorage থেকে
+  const userName = localStorage.getItem('fdUser');
+  if (!userName) {
+    alert('তোমার নাম পাওয়া যায়নি, লগইন করো!');
     window.location.href = 'index.html';
   }
-  document.getElementById('userNameDisplay').textContent = `স্বাগতম, ${currentUser}`;
 
-  const chatArea = document.getElementById('chatArea');
+  const chatBox = document.getElementById('chatBox');
   const msgInput = document.getElementById('msgInput');
   const sendBtn = document.getElementById('sendBtn');
-  const imageInput = document.getElementById('imageInput');
+  const imgUpload = document.getElementById('imgUpload');
+  const logoutBtn = document.getElementById('logoutBtn');
 
-  // মেসেজ লোড করা ও রিয়েলটাইম আপডেটের জন্য
-  function scrollToBottom() {
-    chatArea.scrollTop = chatArea.scrollHeight;
-  }
-
-  db.collection('messages')
-    .orderBy('timestamp')
-    .onSnapshot(snapshot => {
-      chatArea.innerHTML = '';
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const msgDiv = document.createElement('div');
-        msgDiv.classList.add('message');
-
-        if (data.sender === currentUser) {
-          msgDiv.classList.add('myMsg');
-        } else {
-          msgDiv.classList.add('otherMsg');
-        }
-
-        if (data.type === 'text') {
-          msgDiv.textContent = `${data.sender}: ${data.text}`;
-        } else if (data.type === 'image') {
-          // ছবি দেখানোর জন্য
-          const img = document.createElement('img');
-          img.src = data.imageBase64;
-          img.style.maxWidth = '200px';
-          img.style.borderRadius = '12px';
-          msgDiv.textContent = `${data.sender}: `;
-          msgDiv.appendChild(img);
-        }
-
-        chatArea.appendChild(msgDiv);
-      });
-      scrollToBottom();
-    });
-
-  // মেসেজ পাঠানোর ফাংশন
-  sendBtn.onclick = async () => {
-    const text = msgInput.value.trim();
-    if (!text) return;
-
-    await db.collection('messages').add({
-      sender: currentUser,
-      type: 'text',
-      text: text,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    msgInput.value = '';
+  // লগআউট
+  logoutBtn.onclick = () => {
+    localStorage.removeItem('fdUser');
+    window.location.href = 'index.html';
   };
 
-  // এন্টার দিয়ে মেসেজ পাঠানো
+  // মেসেজ পাঠানোর ফাংশন
+  async function sendMessage(text, imgBase64 = null) {
+    if (!text && !imgBase64) return;
+
+    await addDoc(collection(db, 'messages'), {
+      sender: userName,
+      text: text || '',
+      image: imgBase64 || '',
+      createdAt: serverTimestamp()
+    });
+
+    msgInput.value = '';
+  }
+
+  sendBtn.onclick = () => {
+    const text = msgInput.value.trim();
+    sendMessage(text);
+  };
+
   msgInput.addEventListener('keyup', e => {
     if (e.key === 'Enter') sendBtn.click();
   });
 
-  // ছবি আপলোড হলে বেস64 এ পাঠানো হবে
-  imageInput.addEventListener('change', async e => {
-    const file = e.target.files[0];
+  // ছবি আপলোড হলে base64 এ রূপান্তর এবং মেসেজ হিসেবে পাঠানো
+  imgUpload.addEventListener('change', () => {
+    const file = imgUpload.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = async function(evt) {
-      const base64String = evt.target.result;
-      await db.collection('messages').add({
-        sender: currentUser,
-        type: 'image',
-        imageBase64: base64String,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      imageInput.value = '';
+    reader.onload = () => {
+      sendMessage(null, reader.result);
     };
     reader.readAsDataURL(file);
+
+    // ক্লিয়ার ফাইল ইনপুট
+    imgUpload.value = '';
   });
 
-  // লগআউট বাটন ক্লিক করলে
-  document.getElementById('logoutBtn').onclick = () => {
-    localStorage.removeItem('fdUser');
-    window.location.href = 'index.html';
-  };
+  // নতুন মেসেজ দেখার জন্য realtime listener
+  const q = query(collection(db, 'messages'), orderBy('createdAt'));
+  onSnapshot(q, (snapshot) => {
+    chatBox.innerHTML = '';
+    snapshot.forEach(doc => {
+      const msg = doc.data();
+      const div = document.createElement('div');
+      div.classList.add('message');
+      div.classList.add(msg.sender === userName ? 'self' : 'other');
+
+      let content = '';
+
+      if(msg.text) content += `<div>${escapeHtml(msg.text)}</div>`;
+      if(msg.image) content += `<img src="${msg.image}" alt="image" onclick="window.open(this.src,'_blank')" />`;
+
+      div.innerHTML = content;
+
+      chatBox.appendChild(div);
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+  // সিম্পল HTML এস্কেপ
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
 </script>
 
 </body>

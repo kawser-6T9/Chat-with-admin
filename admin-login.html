@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>অ্যাডমিন লগইন</title>
   <style>
+    /* তোমার স্টাইল ঠিক আছে */
     body, html {
       margin:0; padding:0; height:100%;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -67,7 +68,7 @@
     const loginBtn = document.getElementById('loginBtn');
     const errorMsg = document.getElementById('errorMsg');
 
-    // লোকাল ইউজারনেম এবং পাসওয়ার্ড (যেটা তুমি চাইলে পরিবর্তন করতে পারো)
+    // লোকাল ইউজারনেম এবং পাসওয়ার্ড
     const ADMIN_CREDENTIALS = {
       username: 'Kamruls',
       password: 'sss'
@@ -85,8 +86,9 @@
       }
 
       if (user === ADMIN_CREDENTIALS.username && pass === ADMIN_CREDENTIALS.password) {
-        // লগইন সফল হলে এখানে কাজ করো
-        // উদাহরণ স্বরূপ: অন্য পেজে রিডাইরেক্ট করো:
+        // লগইন সফল হলে localStorage-এ স্টোর করো
+        localStorage.setItem('adminLoggedIn', 'true');
+        // তারপর ড্যাশবোর্ডে রিডাইরেক্ট করো
         window.location.href = 'admin-dashboard.html';
       } else {
         errorMsg.textContent = 'ইউজারনেম বা পাসওয়ার্ড ভুল।';
@@ -97,6 +99,13 @@
     document.getElementById('adminPass').addEventListener('keyup', function(e) {
       if (e.key === 'Enter') loginBtn.click();
     });
+
+    // যদি ইতোমধ্যে লগইন করা থাকে, তাহলে লগিন পেজে এলে সরাসরি ড্যাশবোর্ডে নিয়ে যাবে
+    window.onload = () => {
+      if(localStorage.getItem('adminLoggedIn') === 'true') {
+        window.location.href = 'admin-dashboard.html';
+      }
+    }
   </script>
 </body>
 </html>

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pakhi Chat (Simple)</title>
+<style>
+  :root{--primary:#2563eb;--bg:#f3f4f6;--card:#fff}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto}
+  body{background:var(--bg);display:flex;flex-direction:column}
+  header{background:linear-gradient(90deg,var(--primary),#1e40af);color:#fff;padding:12px 14px;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+  header .right{display:flex;gap:8px}
+  .wrapper{display:flex;flex-direction:column;flex:1;max-height:calc(100vh - 56px)}
+  #chatBox{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+  .msg{max-width:78%;padding:10px;border-radius:12px;background:var(--card);box-shadow:0 4px 14px rgba(2,6,23,0.06)}
+  .me{align-self:flex-end;background:#dcfce7;border-bottom-right-radius:4px}
+  .other{align-self:flex-start;background:#fff}
+  .meta{font-size:12px;color:#374151;margin-bottom:6px;font-weight:700}
+  .text{font-size:15px;color:#0f172a}
+  .inputArea{display:flex;gap:8px;padding:10px;background:var(--card);border-top:1px solid #e6e9ee}
+  .inputArea input[type=text]{flex:1;padding:12px;border-radius:999px;border:1px solid #ddd}
+  .sendBtn{background:var(--primary);color:#fff;padding:10px 14px;border-radius:999px;border:none;font-weight:800}
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;z-index:999}
+  .card{background:#fff;padding:16px;border-radius:12px;width:92%;max-width:420px}
+  .card h3{margin:0 0 8px}
+  .field{margin-top:8px}
+  .field input{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd}
+  .btn{display:inline-block;padding:10px 12px;border-radius:8px;border:none;background:var(--primary);color:#fff;font-weight:800;margin-top:10px}
+  /* action menu */
+  #actionMenu{position:fixed;background:#fff;border-radius:8px;padding:8px;box-shadow:0 8px 30px rgba(2,6,23,0.12);display:none;z-index:9999}
+  #actionMenu button{display:block;background:transparent;border:none;padding:8px 12px;text-align:left;width:100%;font-weight:700}
+  /* small link */
+  .link{color:var(--primary);font-weight:800;text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div>Pakhi Chat — মোবাইল</div>
+  <div class="right">
+    <a href="admin.html" id="adminBtn" class="btn" style="background:#111827">Admin Login</a>
+  </div>
+</header><div class="wrapper">
+  <div id="chatBox"></div>
+  <div id="typing" style="padding-left:12px;color:#374151;font-weight:700"></div>
+  <div class="inputArea">
+    <input id="messageInput" type="text" placeholder="মেসেজ লিখুন..." />
+    <button id="sendBtn" class="sendBtn">Send</button>
+  </div>
+</div><div id="loginModal" class="modal">
+  <div class="card">
+    <h3>চ্যাটে নাম লিখুন</h3>
+    <p style="margin:0;color:#374151">আপনার নাম লিখলে সিস্টেম দেখাবে আপনি আগে থেকে রেজিস্টার আছেন কি না।</p>
+    <div class="field"><input id="loginName" placeholder="আপনার নাম (exact)" /></div>
+    <button id="loginNameBtn" class="btn">পরবর্তী</button>
+  </div>
+</div><div id="passwordModal" class="modal" style="display:none">
+  <div class="card">
+    <h3>পাসওয়ার্ড দিন</h3>
+    <p style="margin:0;color:#374151">নাম: <span id="pwName" style="font-weight:800"></span></p>
+    <div class="field"><input id="loginPassword" type="password" placeholder="আপনার পাসওয়ার্ড"/></div>
+    <button id="loginWithPassword" class="btn">লগইন</button>
+  </div>
+</div><div id="contactPopup" class="modal" style="display:none">
+  <div class="card">
+    <h3>পাসওয়ার্ড সেট করা নেই</h3>
+    <p>তুমি এখনো পাসওয়ার্ড পোৱা নাই। পাসওয়ার্ড পেতে নিচের লিঙ্ক এ যোগাযোগ করো:</p>
+    <p><a class="link" href="https://m.me/kawser.ahmed.88690" target="_blank">Messenger</a>  |  <a class="link" href="https://wa.me/+8801750868119" target="_blank">WhatsApp</a></p>
+    <p style="color:#374151">Admin-কে লিঙ্ক পাঠাও, তিনি তোমার জন্য পাসওয়ার্ড সেট করে দিবেন।</p>
+    <button id="closeContact" class="btn" style="background:#ef4444">Close</button>
+  </div>
+</div>
+
+<div id="actionMenu">
+  <button id="actReply">↩ Reply</button>
+  <button id="actEdit">✏️ Edit</button>
+  <button id="actUnsend">🗑️ Unsend</button>
+</div><audio id="notif" src="" preload="auto"></audio>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script><script>
+// ---------------- CONFIG ----------------
+const firebaseConfig = {
+  apiKey: "AIzaSyDJ_KagqCQzTavn4SU81g9XV29k76cNLF8",
+  authDomain: "pakhi-e3aad.firebaseapp.com",
+  projectId: "pakhi-e3aad",
+  storageBucket: "pakhi-e3aad.firebasestorage.app",
+  messagingSenderId: "235336322769",
+  appId: "1:235336322769:web:6400ff0350ea3c60e2fff0"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ---------------- helpers ----------------
+function el(id){return document.getElementById(id)}
+function show(elm){elm.style.display='flex'}
+function hide(elm){elm.style.display='none'}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+async function sha256(str){const encoder=new TextEncoder();const data=encoder.encode(str);const hash=await crypto.subtle.digest('SHA-256',data);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+
+// ---------------- UI refs ----------------
+const loginModal = el('loginModal');
+const loginName = el('loginName');
+const loginNameBtn = el('loginNameBtn');
+const passwordModal = el('passwordModal');
+const pwName = el('pwName');
+const loginPassword = el('loginPassword');
+const loginWithPassword = el('loginWithPassword');
+const contactPopup = el('contactPopup');
+const closeContact = el('closeContact');
+
+const chatBox = el('chatBox');
+const messageInput = el('messageInput');
+const sendBtn = el('sendBtn');
+const actionMenu = el('actionMenu');
+const actReply = el('actReply');
+const actEdit = el('actEdit');
+const actUnsend = el('actUnsend');
+
+// ---------------- State ----------------
+let currentUser = null; // {name}
+let replyingTo = null;
+let editingId = null;
+let selectedMsgElem = null;
+let unsubscribeMsgs = null;
+
+// ---------------- Login flow ----------------
+loginNameBtn.addEventListener('click', async ()=>{
+  const name = loginName.value.trim();
+  if(!name) return alert('নাম লিখুন');
+  // check users collection
+  const doc = await db.collection('users').doc(name).get();
+  if(!doc.exists){
+    // show contact popup
+    show(contactPopup);
+    return;
+  }
+  // name exists -> ask password
+  pwName.textContent = name;
+  show(passwordModal);
+  hide(loginModal);
+});
+
+loginWithPassword.addEventListener('click', async ()=>{
+  const name = pwName.textContent;
+  const pass = loginPassword.value || '';
+  if(!pass) return alert('পাসওয়ার্ড দিন');
+  const doc = await db.collection('users').doc(name).get();
+  if(!doc.exists) return alert('এখানে কোনো ইউজার নেই');
+  const stored = doc.data();
+  const h = await sha256(pass);
+  if(stored.hash !== h) return alert('ভুল পাসওয়ার্ড');
+  // success
+  currentUser = {name: name};
+  hide(passwordModal);
+  initChat();
+});
+
+closeContact.addEventListener('click', ()=>{hide(contactPopup);show(loginModal);})
+
+
+// ---------------- Chat init ----------------
+function initChat(){
+  // hide login if any
+  hide(loginModal); hide(passwordModal); hide(contactPopup);
+  // subscribe messages
+  subscribeMessages();
+}
+
+async function subscribeMessages(){
+  if(unsubscribeMsgs) unsubscribeMsgs();
+  unsubscribeMsgs = db.collection('messages').orderBy('time').onSnapshot(snapshot=>{
+    chatBox.innerHTML = '';
+    snapshot.forEach(doc => appendMessage(doc.id, doc.data()));
+    // always keep scrolled to bottom
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+}
+
+function appendMessage(id, msg){
+  const div = document.createElement('div');
+  div.className = 'msg ' + (currentUser && msg.sender===currentUser.name ? 'me' : 'other');
+  div.dataset.id = id; div.dataset.sender = msg.sender;
+  const meta = `<div class="meta">${esc(msg.sender)} ${msg.edited? '• edited':''}</div>`;
+  const text = `<div class="text">${esc(msg.text)}</div>`;
+  div.innerHTML = meta + text;
+  chatBox.appendChild(div);
+  // notification if not me
+  if(!currentUser || msg.sender !== currentUser.name){ /* play notif if you set audio */ }
+  // attach long-press
+  setupLongPress(div);
+}
+
+// long press (1s)
+function setupLongPress(elem){ let pTimer=null; elem.onpointerdown=(e)=>{ e.preventDefault(); pTimer=setTimeout(()=>{ selectedMsgElem=elem; openActionMenu(elem); }, 900); }; elem.onpointerup=elem.onpointerleave=()=>{ clearTimeout(pTimer); }; }
+
+function openActionMenu(elem){ const rect = elem.getBoundingClientRect(); actionMenu.style.display='block'; const menuRect = actionMenu.getBoundingClientRect(); let top = window.scrollY + rect.top - menuRect.height - 8; if(top<8) top = window.scrollY + rect.bottom + 8; let left = window.scrollX + rect.left + rect.width/2 - menuRect.width/2; if(left<8) left = 8; actionMenu.style.top = top + 'px'; actionMenu.style.left = left + 'px'; // show/hide edit/unsend
+  const isMe = currentUser && elem.dataset.sender === currentUser.name; actEdit.style.display = isMe? 'block':'none'; actUnsend.style.display = isMe? 'block':'none'; }
+
+document.addEventListener('click', (e)=>{ if(!actionMenu.contains(e.target)) actionMenu.style.display='none'; })
+
+// actions
+actReply.addEventListener('click', ()=>{ if(!selectedMsgElem) return; replyingTo = {id: selectedMsgElem.dataset.id, sender: selectedMsgElem.dataset.sender, text: selectedMsgElem.querySelector('.text').textContent}; messageInput.focus(); actionMenu.style.display='none'; });
+actEdit.addEventListener('click', ()=>{ if(!selectedMsgElem) return; editingId = selectedMsgElem.dataset.id; messageInput.value = selectedMsgElem.querySelector('.text').textContent; actionMenu.style.display='none'; messageInput.focus(); });
+actUnsend.addEventListener('click', async ()=>{ if(!selectedMsgElem) return; if(confirm('Unsend message?')){ await db.collection('messages').doc(selectedMsgElem.dataset.id).delete(); } actionMenu.style.display='none'; });
+
+// send
+sendBtn.addEventListener('click', sendMessage);
+messageInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); } })
+
+async function sendMessage(){
+  if(!currentUser) return alert('প্রথমে লগিন করো');
+  const text = messageInput.value.trim();
+  if(!text) return;
+  if(editingId){ try{ await db.collection('messages').doc(editingId).update({text: text, edited: true, time: firebase.firestore.FieldValue.serverTimestamp()}); editingId=null; messageInput.value=''; return; } catch(e){alert('Update failed');} }
+  const msg = {sender: currentUser.name, text: text, time: firebase.firestore.FieldValue.serverTimestamp(), edited: false};
+  await db.collection('messages').add(msg);
+  messageInput.value='';
+}
+
+// Start: show login modal
+show(loginModal);
+
+</script></body>
+  </html>
+  

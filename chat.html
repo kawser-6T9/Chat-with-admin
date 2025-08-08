@@ -3,127 +3,219 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>চ্যাট রুম</title>
+  <title>Professional Chat</title>
   <style>
+    /* Reset & Basic */
+    * {
+      box-sizing: border-box;
+    }
     body, html {
       margin: 0; padding: 0; height: 100%;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f0f2f5;
-      display: flex; flex-direction: column;
+      background: #f5f7fb;
+      display: flex;
+      flex-direction: column;
+      max-width: 700px;
+      margin: auto;
     }
+
     header {
-      background: #2563eb;
+      background: #1a73e8;
       color: white;
       padding: 15px 20px;
-      font-size: 20px;
+      font-size: 24px;
       font-weight: 700;
       text-align: center;
       user-select: none;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
     }
+
     #chatBox {
       flex: 1;
       overflow-y: auto;
-      padding: 15px;
-      background: #e5e7eb;
+      padding: 20px;
+      background: white;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
+      scroll-behavior: smooth;
     }
+
     .message {
-      max-width: 75%;
+      max-width: 70%;
       padding: 10px 15px;
-      border-radius: 20px;
+      border-radius: 18px;
+      position: relative;
+      display: inline-block;
       word-wrap: break-word;
-      font-size: 16px;
-      line-height: 1.3;
-    }
-    .message.self {
-      align-self: flex-end;
-      background: #2563eb;
-      color: white;
-      border-bottom-right-radius: 4px;
-    }
-    .message.other {
-      align-self: flex-start;
-      background: white;
-      color: #111;
-      border-bottom-left-radius: 4px;
-    }
-    .message img {
-      max-width: 150px;
-      border-radius: 12px;
-      margin-top: 5px;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
       cursor: pointer;
+      user-select:none;
     }
+
+    .message .replyTo {
+      font-size: 13px;
+      color: #666;
+      border-left: 3px solid #4285f4;
+      margin-bottom: 5px;
+      padding-left: 8px;
+      font-style: italic;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .message .time {
+      font-size: 10px;
+      color: #999;
+      position: absolute;
+      bottom: 4px;
+      right: 10px;
+    }
+
+    .message.sent {
+      background: #e8f0fe;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+      color: #202124;
+    }
+
+    .message.received {
+      background: #f1f3f4;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      color: #202124;
+    }
+
+    .message img {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-top: 6px;
+    }
+
+    /* Reply & Unsend popup */
+    #actionMenu {
+      position: fixed;
+      background: white;
+      box-shadow: 0 0 10px rgb(0 0 0 / 0.15);
+      border-radius: 8px;
+      padding: 10px 5px;
+      display: none;
+      z-index: 1000;
+      user-select:none;
+    }
+
+    #actionMenu button {
+      background: none;
+      border: none;
+      color: #1a73e8;
+      padding: 6px 14px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+    }
+
+    #actionMenu button:hover {
+      background-color: #e8f0fe;
+    }
+
+    /* Input area */
     #inputArea {
-      display: flex;
       padding: 10px 15px;
       background: white;
-      border-top: 1px solid #ccc;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      box-shadow: 0 -1px 8px rgb(0 0 0 / 0.1);
+      user-select:none;
     }
-    #inputArea input[type="text"] {
+
+    #msgInput {
       flex: 1;
-      padding: 10px 15px;
+      padding: 12px 16px;
       font-size: 16px;
+      border-radius: 24px;
       border: 1px solid #ccc;
-      border-radius: 25px;
       outline: none;
+      transition: border-color 0.3s ease;
     }
-    #inputArea button, #inputArea label {
-      margin-left: 10px;
-      background: #2563eb;
-      color: white;
+
+    #msgInput:focus {
+      border-color: #1a73e8;
+    }
+
+    #sendBtn, #imageBtn {
+      background: #1a73e8;
       border: none;
-      padding: 10px 15px;
-      font-size: 18px;
+      color: white;
+      padding: 12px 18px;
       border-radius: 50%;
       cursor: pointer;
-      user-select: none;
+      font-size: 20px;
+      transition: background-color 0.3s ease;
     }
-    #inputArea input[type="file"] {
-      display: none;
+
+    #sendBtn:hover, #imageBtn:hover {
+      background: #155ab6;
     }
-    #logoutBtn {
-      position: fixed;
-      top: 10px;
-      right: 15px;
-      background: #f87171;
-      border: none;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-weight: 700;
+
+    /* Image preview before sending */
+    #imagePreview {
+      max-width: 200px;
+      max-height: 150px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      object-fit: contain;
       cursor: pointer;
-      user-select: none;
-      z-index: 110;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+      user-select:none;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      header {
+        font-size: 20px;
+      }
+      #msgInput {
+        font-size: 14px;
+      }
+      #sendBtn, #imageBtn {
+        padding: 10px 14px;
+        font-size: 18px;
+      }
     }
   </style>
 </head>
 <body>
 
-<header>চ্যাট রুম</header>
-<button id="logoutBtn" title="লগআউট">লগআউট</button>
+<header>Professional Chat</header>
 
 <div id="chatBox"></div>
 
 <div id="inputArea">
   <input type="text" id="msgInput" placeholder="মেসেজ লিখুন..." autocomplete="off" />
-  <label for="imgUpload" title="ছবি পাঠান">📷</label>
-  <input type="file" id="imgUpload" accept="image/*" />
-  <button id="sendBtn" title="পাঠান">➡️</button>
+  <input type="file" id="imageInput" accept="image/*" style="display:none" />
+  <button id="imageBtn" title="ছবি পাঠান 📷">📷</button>
+  <button id="sendBtn" title="মেসেজ পাঠান ➤">➤</button>
+</div>
+
+<!-- Action menu for reply / unsend -->
+<div id="actionMenu">
+  <button id="replyBtn">Reply</button>
+  <button id="unsendBtn" style="color:#d93025;">Unsend</button>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
   import {
-    getFirestore, collection, addDoc,
-    query, orderBy, onSnapshot, serverTimestamp
+    getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc
   } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  // Firebase Config
+  // Firebase config (নিজের কনফিগ বসাও)
   const firebaseConfig = {
     apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
     authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
@@ -133,93 +225,206 @@
     appId: "1:604406589995:web:8baddc0c5752386ffb586e"
   };
 
+  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // ইউজার নাম localStorage থেকে
-  const userName = localStorage.getItem('fdUser');
+  const userName = localStorage.getItem('userName');
   if (!userName) {
-    alert('তোমার নাম পাওয়া যায়নি, লগইন করো!');
+    alert('তোমার নাম পাওয়া যায়নি, লগইন পেজে ফিরে যাও।');
     window.location.href = 'index.html';
+    throw new Error('User not logged in.');
   }
 
   const chatBox = document.getElementById('chatBox');
   const msgInput = document.getElementById('msgInput');
   const sendBtn = document.getElementById('sendBtn');
-  const imgUpload = document.getElementById('imgUpload');
-  const logoutBtn = document.getElementById('logoutBtn');
+  const imageBtn = document.getElementById('imageBtn');
+  const imageInput = document.getElementById('imageInput');
+  const actionMenu = document.getElementById('actionMenu');
+  const replyBtn = document.getElementById('replyBtn');
+  const unsendBtn = document.getElementById('unsendBtn');
 
-  // লগআউট
-  logoutBtn.onclick = () => {
-    localStorage.removeItem('fdUser');
-    window.location.href = 'index.html';
-  };
+  let messagesCol = collection(db, 'messages');
+  let replyTo = null;  // reply করার মেসেজ আইডি এবং টেক্সট রাখবে
+  let selectedMsgElement = null; // action menu টা কোন মেসেজে দেখাবে
 
-  // মেসেজ পাঠানোর ফাংশন
-  async function sendMessage(text, imgBase64 = null) {
-    if (!text && !imgBase64) return;
-
-    await addDoc(collection(db, 'messages'), {
-      sender: userName,
-      text: text || '',
-      image: imgBase64 || '',
-      createdAt: serverTimestamp()
-    });
-
-    msgInput.value = '';
-  }
-
-  sendBtn.onclick = () => {
-    const text = msgInput.value.trim();
-    sendMessage(text);
-  };
-
-  msgInput.addEventListener('keyup', e => {
-    if (e.key === 'Enter') sendBtn.click();
-  });
-
-  // ছবি আপলোড হলে base64 এ রূপান্তর এবং মেসেজ হিসেবে পাঠানো
-  imgUpload.addEventListener('change', () => {
-    const file = imgUpload.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      sendMessage(null, reader.result);
-    };
-    reader.readAsDataURL(file);
-
-    // ক্লিয়ার ফাইল ইনপুট
-    imgUpload.value = '';
-  });
-
-  // নতুন মেসেজ দেখার জন্য realtime listener
-  const q = query(collection(db, 'messages'), orderBy('createdAt'));
+  // মেসেজ লোড করার কোড
+  const q = query(messagesCol, orderBy('createdAt'));
   onSnapshot(q, (snapshot) => {
     chatBox.innerHTML = '';
-    snapshot.forEach(doc => {
-      const msg = doc.data();
-      const div = document.createElement('div');
-      div.classList.add('message');
-      div.classList.add(msg.sender === userName ? 'self' : 'other');
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      const msgId = docSnap.id;
 
-      let content = '';
+      // message div তৈরি
+      const msgDiv = document.createElement('div');
+      msgDiv.classList.add('message');
 
-      if(msg.text) content += `<div>${escapeHtml(msg.text)}</div>`;
-      if(msg.image) content += `<img src="${msg.image}" alt="image" onclick="window.open(this.src,'_blank')" />`;
+      // sender বা receiver হিসেবে আলাদা ক্লাস
+      if (data.user === userName) {
+        msgDiv.classList.add('sent');
+      } else {
+        msgDiv.classList.add('received');
+      }
 
-      div.innerHTML = content;
+      // reply থাকলে দেখাবে
+      let replyHtml = '';
+      if(data.replyToText) {
+        replyHtml = `<div class="replyTo">${data.replyToText}</div>`;
+      }
 
-      chatBox.appendChild(div);
+      // ছবি থাকলে
+      let imgHtml = '';
+      if(data.image) {
+        imgHtml = `<img src="${data.image}" alt="image" />`;
+      }
+
+      msgDiv.innerHTML = replyHtml + `<div>${data.text ? data.text : ''}</div>` + imgHtml +
+        `<div class="time">${data.createdAt ? new Date(data.createdAt.seconds*1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</div>`;
+
+      // data attribute হিসেবে msgId রাখছি যাতে undo/reply কাজ করে
+      msgDiv.dataset.id = msgId;
+
+      chatBox.appendChild(msgDiv);
+
+      // মেসেজের উপর ক্লিক করলে অ্যাকশন মেনু দেখাবে
+      msgDiv.onclick = (e) => {
+        e.stopPropagation();
+        selectedMsgElement = msgDiv;
+        const rect = msgDiv.getBoundingClientRect();
+
+        actionMenu.style.display = 'block';
+        actionMenu.style.top = (rect.top - 40 + window.scrollY) + 'px';
+        actionMenu.style.left = (rect.left + rect.width/2 - actionMenu.offsetWidth/2) + 'px';
+      };
     });
+
     chatBox.scrollTop = chatBox.scrollHeight;
   });
 
-  // সিম্পল HTML এস্কেপ
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+  // ক্লিক করে action menu বাদ দিতে হবে
+  window.onclick = () => {
+    actionMenu.style.display = 'none';
+    selectedMsgElement = null;
+    replyTo = null;
+    msgInput.placeholder = "মেসেজ লিখুন...";
+  };
+
+  // reply button event
+  replyBtn.onclick = () => {
+    if (!selectedMsgElement) return;
+    const id = selectedMsgElement.dataset.id;
+    // replyToText নিতে হলে আমাদের snapshot থেকে বার বার না নিয়ে simplifier way নিচ্ছি:
+    const replyTextDiv = selectedMsgElement.querySelector('.replyTo');
+    let replyText = '';
+    if(replyTextDiv) replyText = replyTextDiv.textContent;
+    else replyText = selectedMsgElement.querySelector('div').textContent;
+
+    replyTo = { id: id, text: replyText };
+
+    msgInput.placeholder = `Replying to: "${replyText.slice(0,30)}..."`;
+    msgInput.focus();
+
+    actionMenu.style.display = 'none';
+  };
+
+  // unsend button event
+  unsendBtn.onclick = async () => {
+    if (!selectedMsgElement) return;
+    const id = selectedMsgElement.dataset.id;
+
+    try {
+      await deleteDoc(doc(db, 'messages', id));
+      actionMenu.style.display = 'none';
+      replyTo = null;
+      selectedMsgElement = null;
+    } catch (error) {
+      alert('মেসেজ মুছতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+      console.error(error);
+    }
+  };
+
+  // মেসেজ পাঠানোর কোড
+  sendBtn.onclick = async () => {
+    let text = msgInput.value.trim();
+    if(!text && !imageToSend) return;
+
+    const messageData = {
+      user: userName,
+      createdAt: serverTimestamp()
+    };
+
+    if(text) messageData.text = text;
+    if(replyTo) {
+      messageData.replyToId = replyTo.id;
+      messageData.replyToText = replyTo.text;
+    }
+    if(imageToSend) {
+      messageData.image = imageToSend;
+    }
+
+    try {
+      await addDoc(messagesCol, messageData);
+      msgInput.value = '';
+      replyTo = null;
+      msgInput.placeholder = "মেসেজ লিখুন...";
+      clearImagePreview();
+    } catch (error) {
+      alert('মেসেজ পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+      console.error(error);
+    }
+  };
+
+  // Enter চাপলেও মেসেজ যাবে
+  msgInput.addEventListener('keyup', e => {
+    if(e.key === 'Enter') sendBtn.click();
+  });
+
+  // ছবি আপলোড করার জন্য
+  let imageToSend = null;
+
+  imageBtn.onclick = () => imageInput.click();
+
+  imageInput.onchange = () => {
+    const file = imageInput.files[0];
+    if(!file) return;
+
+    if(!file.type.startsWith('image/')) {
+      alert('শুধুমাত্র ছবি আপলোড করা যাবে।');
+      imageInput.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      imageToSend = e.target.result;
+      showImagePreview(imageToSend);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // ইমেজ প্রিভিউ দেখানোর জন্য DOM element
+  let imagePreviewEl = null;
+
+  function showImagePreview(src) {
+    if(!imagePreviewEl) {
+      imagePreviewEl = document.createElement('img');
+      imagePreviewEl.id = 'imagePreview';
+      imagePreviewEl.title = "প্রিভিউ (ক্লিক করলে মুছে যাবে)";
+      imagePreviewEl.onclick = clearImagePreview;
+      document.body.insertBefore(imagePreviewEl, document.getElementById('inputArea'));
+    }
+    imagePreviewEl.src = src;
+  }
+
+  function clearImagePreview() {
+    if(imagePreviewEl) {
+      imagePreviewEl.remove();
+      imagePreviewEl = null;
+    }
+    imageToSend = null;
+    imageInput.value = '';
   }
 </script>
 

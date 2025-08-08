@@ -99,6 +99,9 @@
     document.getElementById('adminPass').addEventListener('keyup', function(e) {
       if (e.key === 'Enter') loginBtn.click();
     });
+    // লগিন সফল হলে
+localStorage.setItem('adminLoggedIn', 'true');
+window.location.href = 'admin-dashboard.html';
 
     // যদি ইতোমধ্যে লগইন করা থাকে, তাহলে লগিন পেজে এলে সরাসরি ড্যাশবোর্ডে নিয়ে যাবে
     window.onload = () => {

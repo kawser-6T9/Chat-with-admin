@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>অ্যাডমিন ড্যাশবোর্ড</title>
+<style>
+  body, html {
+    margin:0; padding:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  header {
+    background: #2563eb;
+    color: white;
+    padding: 15px 20px;
+    font-size: 22px;
+    font-weight: 700;
+    user-select:none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header button.logoutBtn {
+    background: #f87171;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  header button.logoutBtn:hover {
+    background: #dc2626;
+  }
+
+  main {
+    flex: 1;
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+  }
+
+  h2 {
+    color: #111827;
+    margin-bottom: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 15px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  th {
+    background: #3b82f6;
+    color: white;
+  }
+  tr:hover {
+    background: #bfdbfe;
+  }
+
+  /* Responsive */
+  @media (max-width:600px) {
+    th, td {
+      padding: 10px 8px;
+      font-size: 14px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  অ্যাডমিন ড্যাশবোর্ড
+  <button class="logoutBtn" id="logoutBtn">লগআউট</button>
+</header>
+
+<main>
+  <h2>ইউজার তালিকা</h2>
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>নাম</th>
+        <th>লগইন টাইম</th>
+        <th>অ্যাকশন</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- ইউজাররা এখানে দেখানো হবে -->
+    </tbody>
+  </table>
+</main>
+
+<script>
+  // সাধারন লগআউট ফাংশন (localStorage থেকে ইউজার ডেটা মুছে দেয়)
+  document.getElementById('logoutBtn').onclick = () => {
+    localStorage.removeItem('adminLoggedIn');
+    localStorage.removeItem('fdUser'); // তুমি চাইলে ইউজার লগআউট করতে দিতে পারো
+    window.location.href = 'admin-login.html';
+  };
+
+  // সিম্পল ইউজার ডাটা (তোমার Firebase থেকে বা যেখান থেকে নেবে, সেটা এখানে বসাবে)
+  // ডেমোর জন্য
+  const users = [
+    { name: 'kamrul', loginTime: '2025-08-08 10:00 AM' },
+    { name: 'sufi', loginTime: '2025-08-08 09:30 AM' },
+    { name: 'tanvir', loginTime: '2025-08-07 11:15 PM' },
+  ];
+
+  const tbody = document.querySelector('#userTable tbody');
+
+  // ইউজার তালিকা টেবিলে যোগ করা
+  function loadUsers() {
+    tbody.innerHTML = '';
+    users.forEach(user => {
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td>${user.name}</td>
+        <td>${user.loginTime}</td>
+        <td><button onclick="alert('ফিচার আসছে...')">ব্যান / আনব্যান</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  loadUsers();
+
+  // যদি তুমি লগইন চেক করতে চাও, তখন নিচে কোড যোগ করো:
+  window.onload = () => {
+    if (!localStorage.getItem('adminLoggedIn')) {
+      window.location.href = 'admin-login.html';
+    }
+  };
+</script>
+
+</body>
+</html>

@@ -8,25 +8,35 @@
     body {
       font-family: Arial, sans-serif;
       margin:0; display:flex; flex-direction:column; height:100vh;
+      background: #f9fafb;
     }
     header {
       background:#2563eb; color:#fff; padding:15px;
       font-weight:bold; display:flex; justify-content:space-between;
       align-items:center;
+      user-select:none;
     }
     #logoutBtn {
-      background:#f87171; border:none; color:#fff;
+      background:#ef4444; border:none; color:#fff;
       padding:8px 15px; border-radius:5px; cursor:pointer;
+      font-weight:bold;
+      transition: background-color 0.3s ease;
+    }
+    #logoutBtn:hover {
+      background:#b91c1c;
     }
     #messages {
       flex:1; overflow-y:auto; padding:15px;
-      background:#f9f9f9;
+      background:#fff;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
     }
     .message {
-      background:#fff; padding:10px; margin-bottom:10px;
-      border-radius:8px; box-shadow:0 0 3px rgba(0,0,0,0.1);
+      background:#f3f4f6; padding:10px; margin-bottom:10px;
+      border-radius:8px; box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
       position: relative;
       max-width: 80%;
+      word-wrap: break-word;
     }
     .message.you {
       margin-left:auto; background:#dbeafe;
@@ -42,17 +52,23 @@
     .replyBox {
       font-size: 13px;
       color: #555;
-      background: #f0f0f0;
-      padding: 5px 8px;
-      border-left: 3px solid #2563eb;
+      background: #e0e7ff;
+      padding: 6px 10px;
+      border-left: 4px solid #2563eb;
       margin-bottom: 5px;
       border-radius: 5px;
+      font-style: italic;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .message img {
-      max-width: 200px;
+      max-width: 180px;
       border-radius: 8px;
       margin-top: 5px;
       cursor: pointer;
+      display: block;
     }
     .actions {
       position: absolute;
@@ -67,45 +83,52 @@
       border: none;
       cursor: pointer;
       color: #888;
+      font-weight: bold;
+      transition: color 0.3s ease;
     }
     .actions button:hover {
       color: #2563eb;
     }
     #inputBox {
-      display:flex; padding:10px; background:#eee;
-      gap: 5px;
+      display:flex; padding:10px; background:#f3f4f6;
+      gap: 8px; align-items:center;
     }
     #messageInput {
-      flex:1; padding:10px; border-radius:5px; border:1px solid #ccc;
+      flex:1; padding:12px; border-radius:5px; border:1px solid #ccc;
       font-size:16px;
+      resize: none;
+      height: 50px;
     }
     #sendBtn, #imageBtn, #replyCancelBtn {
       background:#2563eb; color:#fff; border:none;
       padding:10px 15px; border-radius:5px; cursor:pointer;
       font-weight:bold;
+      flex-shrink: 0;
     }
     #replyCancelBtn {
-      background:#f87171;
+      background:#ef4444;
     }
     #replyInfo {
-      background:#e0e7ff; padding:5px 10px; border-radius:5px;
-      margin-bottom:5px; font-size:14px;
+      background:#e0e7ff; padding:8px 12px; border-radius:5px;
+      margin: 8px 15px 0 15px; font-size:14px;
       display:none;
-      position:relative;
+      position: relative;
+      font-style: italic;
     }
     #replyInfo button {
       position:absolute;
-      top:2px; right:5px;
+      top: 4px; right: 6px;
       background: transparent; border:none;
       font-weight:bold; cursor:pointer; color:#2563eb;
-      font-size:16px;
+      font-size: 18px;
+      line-height: 1;
     }
   </style>
 </head>
 <body>
 
 <header>
-  চ্যাট রুম - <span id="userName"></span>
+  চ্যাট - <span id="userName"></span>
   <button id="logoutBtn">লগআউট</button>
 </header>
 
@@ -113,20 +136,20 @@
 
 <div id="replyInfo">
   রিপ্লাই করছি: <span id="replyText"></span>
-  <button id="replyCancelBtn">×</button>
+  <button id="replyCancelBtn" title="রিপ্লাই বাতিল করো">×</button>
 </div>
 
 <div id="inputBox">
-  <input type="text" id="messageInput" placeholder="মেসেজ লিখুন..." />
+  <textarea id="messageInput" placeholder="মেসেজ লিখুন..." rows="1"></textarea>
   <input type="file" id="imageInput" accept="image/*" style="display:none" />
-  <button id="imageBtn">🖼️</button>
-  <button id="sendBtn">পাঠাও</button>
+  <button id="imageBtn" title="ছবি আপলোড করো">🖼️</button>
+  <button id="sendBtn" title="পাঠাও">➤</button>
 </div>
 
 <script type="module">
   import { db, storage } from './firebase-config.js';
   import {
-    collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc, getDoc, updateDoc
+    collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc, getDoc
   } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
   import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
@@ -134,7 +157,7 @@
   const userName = localStorage.getItem('userName');
 
   if (!userId || !userName) {
-    alert('দয়া করে প্রথমে লগইন করুন।');
+    alert('দয়া করে প্রথমে লগইন করুন।');
     window.location.href = 'index.html';
   }
 
@@ -146,26 +169,25 @@
   const imageBtn = document.getElementById('imageBtn');
   const imageInput = document.getElementById('imageInput');
   const logoutBtn = document.getElementById('logoutBtn');
-
   const replyInfo = document.getElementById('replyInfo');
   const replyTextSpan = document.getElementById('replyText');
   const replyCancelBtn = document.getElementById('replyCancelBtn');
 
   let replyTo = null;
 
-  // লোগআউট
+  // লগআউট ফাংশন
   logoutBtn.onclick = () => {
     localStorage.clear();
     window.location.href = 'index.html';
   };
 
-  // রিপ্লাই ক্যান্সেল
+  // রিপ্লাই বাতিল
   replyCancelBtn.onclick = () => {
     replyTo = null;
     replyInfo.style.display = 'none';
   };
 
-  // ইমেজ বাটনে ক্লিক করলে ফাইল সিলেক্ট করবে
+  // ইমেজ বাটনে ক্লিক করলে ফাইল সিলেক্ট হবে
   imageBtn.onclick = () => {
     imageInput.click();
   };
@@ -179,7 +201,7 @@
     try {
       const snapshot = await uploadBytes(storageRef, file);
       const url = await getDownloadURL(snapshot.ref);
-      sendMessage('', url);  // ফাঁকা টেক্সট ও ইমেজ URL সহ পাঠাবে
+      await sendMessage('', url);
       imageInput.value = '';
     } catch (err) {
       alert('ইমেজ আপলোড করতে সমস্যা হয়েছে।');
@@ -203,6 +225,7 @@
       messageInput.value = '';
       replyTo = null;
       replyInfo.style.display = 'none';
+      messageInput.style.height = '50px';
     } catch (err) {
       alert('মেসেজ পাঠাতে সমস্যা হয়েছে।');
       console.error(err);
@@ -213,6 +236,7 @@
     sendMessage(messageInput.value.trim());
   };
 
+  // Enter প্রেস করলে মেসেজ যাবে, Shift+Enter দিলে নতুন লাইন হবে
   messageInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -220,15 +244,14 @@
     }
   });
 
-  // মেসেজ লোড ও রিয়েলটাইম আপডেট
+  // রিয়েলটাইম মেসেজ লোডিং
   const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'asc'));
-  onSnapshot(messagesQuery, (snapshot) => {
+  onSnapshot(messagesQuery, async (snapshot) => {
     messagesDiv.innerHTML = '';
-    snapshot.forEach(doc => {
-      const msg = doc.data();
-      const id = doc.id;
+    for (const docSnap of snapshot.docs) {
+      const msg = docSnap.data();
+      const id = docSnap.id;
 
-      // মেসেজ div তৈরি
       const msgDiv = document.createElement('div');
       msgDiv.classList.add('message');
       if (msg.sender === userId) msgDiv.classList.add('you');
@@ -239,38 +262,47 @@
       senderDiv.textContent = msg.senderName || 'Unknown';
       msgDiv.appendChild(senderDiv);
 
-      // reply info
+      // reply info দেখানো (যদি রিপ্লাই থাকে)
       if (msg.replyTo) {
-        const replyDocRef = doc(db, 'messages', msg.replyTo);
-        getDoc(replyDocRef).then(replyDocSnap => {
+        try {
+          const replyDocRef = doc(db, 'messages', msg.replyTo);
+          const replyDocSnap = await getDoc(replyDocRef);
           if (replyDocSnap.exists()) {
             const replyData = replyDocSnap.data();
             const replyBox = document.createElement('div');
             replyBox.classList.add('replyBox');
-            replyBox.textContent = `রিপ্লাই: ${replyData.text ? replyData.text.slice(0,50) : '[ছবি]'}`;
-            msgDiv.insertBefore(replyBox, senderDiv.nextSibling);
+            const replyTextPreview = replyData.text ? replyData.text.slice(0, 50) : '[ছবি]';
+            replyBox.textContent = `রিপ্লাই: ${replyTextPreview}`;
+            msgDiv.appendChild(replyBox);
           }
-        });
+        } catch (error) {
+          console.error('রিপ্লাই লোড করতে সমস্যা:', error);
+        }
       }
 
-      // message text
-      const textDiv = document.createElement('div');
-      textDiv.classList.add('text');
-      textDiv.textContent = msg.text;
-      msgDiv.appendChild(textDiv);
+      // মেসেজের টেক্সট
+      if (msg.text) {
+        const textDiv = document.createElement('div');
+        textDiv.classList.add('text');
+        textDiv.textContent = msg.text;
+        msgDiv.appendChild(textDiv);
+      }
 
-      // image show
+      // ইমেজ দেখানো
       if (msg.imageUrl) {
         const img = document.createElement('img');
         img.src = msg.imageUrl;
         img.alt = "Image";
+        // বড় ছবি দেখতে ক্লিক করলে নতুন ট্যাবে খুলবে
+        img.onclick = () => window.open(msg.imageUrl, '_blank');
         msgDiv.appendChild(img);
       }
 
-      // actions: reply, delete (delete only if sender)
+      // মেসেজ একশনে রিপ্লাই ও ডিলেট বাটন
       const actionsDiv = document.createElement('div');
       actionsDiv.classList.add('actions');
 
+      // রিপ্লাই বাটন
       const replyBtn = document.createElement('button');
       replyBtn.textContent = '↩️';
       replyBtn.title = 'রিপ্লাই করো';
@@ -282,10 +314,11 @@
       };
       actionsDiv.appendChild(replyBtn);
 
+      // শুধু মেসেজ যিনি পাঠিয়েছেন, তারাই ডিলেট বাটন দেখতে পাবে
       if (msg.sender === userId) {
         const delBtn = document.createElement('button');
         delBtn.textContent = '🗑️';
-        delBtn.title = 'মেসেজ ডিলিট করো';
+        delBtn.title = 'মেসেজ ডিলেট করো';
         delBtn.onclick = async () => {
           if (confirm('তুমি কি মেসেজটি মুছে ফেলতে চাও?')) {
             try {
@@ -302,9 +335,9 @@
 
       msgDiv.appendChild(actionsDiv);
       messagesDiv.appendChild(msgDiv);
-    });
+    }
 
-    // অটো স্ক্রল টু নিচে
+    // স্ক্রল ডিভের শেষে স্ক্রল করে নিচে নিয়ে যাবে
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   });
 </script>

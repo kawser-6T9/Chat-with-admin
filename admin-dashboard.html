@@ -6,8 +6,7 @@
 <title>অ্যাডমিন ড্যাশবোর্ড</title>
 <style>
   body, html {
-    margin: 0; padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin:0; padding:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #f0f2f5;
     min-height: 100vh;
     display: flex; flex-direction: column;
@@ -18,7 +17,7 @@
     padding: 15px 20px;
     font-size: 22px;
     font-weight: 700;
-    user-select: none;
+    user-select:none;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -39,7 +38,7 @@
   main {
     flex: 1;
     padding: 20px;
-    max-width: 800px;
+    max-width: 900px;
     margin: auto;
   }
   h2 {
@@ -66,11 +65,33 @@
   tr:hover {
     background: #bfdbfe;
   }
+  button.actionBtn {
+    padding: 6px 12px;
+    margin-right: 5px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+  }
+  button.approveBtn {
+    background-color: #10b981;
+  }
+  button.banBtn {
+    background-color: #ef4444;
+  }
+  button.unbanBtn {
+    background-color: #3b82f6;
+  }
   /* Responsive */
   @media (max-width:600px) {
     th, td {
       padding: 10px 8px;
       font-size: 14px;
+    }
+    button.actionBtn {
+      margin-bottom: 6px;
+      width: 100%;
     }
   }
 </style>
@@ -88,7 +109,9 @@
     <thead>
       <tr>
         <th>নাম</th>
-        <th>লগইন টাইম</th>
+        <th>লগইন সময়</th>
+        <th>অনুমোদিত</th>
+        <th>নিষিদ্ধ</th>
         <th>অ্যাকশন</th>
       </tr>
     </thead>
@@ -98,43 +121,91 @@
   </table>
 </main>
 
-<script>
-  // সাধারন লগআউট ফাংশন (localStorage থেকে ইউজার ডেটা মুছে দেয়)
-  document.getElementById('logoutBtn').onclick = () => {
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
+    authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
+    projectId: "chat-with-admin-1ca1a",
+    storageBucket: "chat-with-admin-1ca1a.appspot.com",
+    messagingSenderId: "604406589995",
+    appId: "1:604406589995:web:8baddc0c5752386ffb586e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const tbody = document.querySelector('#userTable tbody');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  logoutBtn.onclick = () => {
     localStorage.removeItem('adminLoggedIn');
     window.location.href = 'admin-login.html';
   };
 
-  // ডেমো ইউজার ডাটা, বাস্তবে Firebase থেকে ডাটা আনবে
-  const users = [
-    { name: 'kamrul', loginTime: '2025-08-08 10:00 AM' },
-    { name: 'sufi', loginTime: '2025-08-08 09:30 AM' },
-    { name: 'tanvir', loginTime: '2025-08-07 11:15 PM' },
-  ];
-
-  const tbody = document.querySelector('#userTable tbody');
-
-  function loadUsers() {
-    tbody.innerHTML = '';
-    users.forEach(user => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${user.name}</td>
-        <td>${user.loginTime}</td>
-        <td><button onclick="alert('ফিচার আসছে...')">ব্যান / আনব্যান</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  loadUsers();
-
-  // লগইন চেক, লগইন না থাকলে login পেজে পাঠাবে
-  window.onload = () => {
+  // অ্যাডমিন চেক (লগইন)
+  window.onload = async () => {
     if (!localStorage.getItem('adminLoggedIn')) {
       window.location.href = 'admin-login.html';
+      return;
     }
+    await loadUsers();
   };
+
+  async function loadUsers() {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">লোড হচ্ছে...</td></tr>';
+    const querySnapshot = await getDocs(collection(db, "users"));
+    tbody.innerHTML = '';
+
+    querySnapshot.forEach(docSnap => {
+      const user = docSnap.data();
+      const id = docSnap.id;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${id}</td>
+        <td>${user.loginTime || '-'}</td>
+        <td>${user.approved ? 'হ্যাঁ' : 'না'}</td>
+        <td>${user.banned ? 'হ্যাঁ' : 'না'}</td>
+        <td>
+          ${user.approved ? '' : `<button class="actionBtn approveBtn" data-id="${id}">অনুমোদন</button>`}
+          ${user.banned ? 
+            `<button class="actionBtn unbanBtn" data-id="${id}">আনব্যান</button>` : 
+            `<button class="actionBtn banBtn" data-id="${id}">ব্যান</button>`
+          }
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+    // বাটনগুলোর ইভেন্ট হ্যান্ডলার
+    document.querySelectorAll('.approveBtn').forEach(btn => {
+      btn.onclick = async e => {
+        const id = e.target.getAttribute('data-id');
+        await updateDoc(doc(db, 'users', id), { approved: true });
+        await loadUsers();
+      };
+    });
+
+    document.querySelectorAll('.banBtn').forEach(btn => {
+      btn.onclick = async e => {
+        const id = e.target.getAttribute('data-id');
+        await updateDoc(doc(db, 'users', id), { banned: true });
+        await loadUsers();
+      };
+    });
+
+    document.querySelectorAll('.unbanBtn').forEach(btn => {
+      const id = btn.getAttribute('data-id');
+      btn.onclick = async e => {
+        await updateDoc(doc(db, 'users', id), { banned: false });
+        await loadUsers();
+      };
+    });
+  }
 </script>
 
 </body>

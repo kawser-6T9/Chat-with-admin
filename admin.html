@@ -2,114 +2,101 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pakhi Chat - Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>অ্যাডমিন লগইন</title>
   <style>
-    body { font-family: sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
-    header { background: #007bff; color: white; padding: 10px; text-align: center; }
-    #loginForm, #adminPanel { max-width: 400px; margin: 30px auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
-    input, button { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; }
-    button { background: #007bff; color: white; border: none; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    .user-list { margin-top: 20px; }
-    .user-item { padding: 8px; border-bottom: 1px solid #eee; }
+    body, html {
+      margin:0; padding:0; height:100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background:#f0f2f5;
+      display:flex; justify-content:center; align-items:center;
+    }
+    #loginBox {
+      background:white;
+      padding:30px;
+      border-radius:12px;
+      box-shadow:0 0 20px rgba(0,0,0,0.1);
+      width:90%;
+      max-width:400px;
+    }
+    h2 {
+      text-align:center;
+      margin-bottom:25px;
+      color:#222;
+    }
+    input {
+      width:100%;
+      padding:12px 15px;
+      margin-bottom:15px;
+      font-size:16px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      outline:none;
+    }
+    button {
+      width:100%;
+      padding:12px;
+      font-size:18px;
+      background:#2563eb;
+      color:white;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    button:hover {
+      background:#1e40af;
+    }
+    #errorMsg {
+      color:red;
+      margin-bottom:15px;
+      text-align:center;
+    }
   </style>
 </head>
 <body>
-
-<header>
-  <h1>Pakhi Chat - অ্যাডমিন প্যানেল</h1>
-</header>
-
-<!-- Login Form -->
-<div id="loginForm">
-  <h2>অ্যাডমিন লগইন</h2>
-  <input type="text" id="adminUsername" placeholder="ইউজারনেম"/>
-  <input type="password" id="adminPassword" placeholder="পাসওয়ার্ড"/>
-  <button onclick="adminLogin()">লগইন</button>
-</div>
-
-<!-- Admin Panel -->
-<div id="adminPanel" style="display:none;">
-  <h2>নতুন ইউজার তৈরি</h2>
-  <input type="text" id="newUsername" placeholder="ইউজারের নাম"/>
-  <input type="password" id="newUserPassword" placeholder="পাসওয়ার্ড"/>
-  <button onclick="createUser()">ইউজার যোগ করো</button>
-
-  <div class="user-list" id="userList">
-    <h3>সব ইউজার</h3>
-    <!-- User list will be loaded here -->
+  <div id="loginBox">
+    <h2>অ্যাডমিন লগইন</h2>
+    <div id="errorMsg"></div>
+    <input type="text" id="adminUser" placeholder="ইউজারনেম" autocomplete="off" />
+    <input type="password" id="adminPass" placeholder="পাসওয়ার্ড" autocomplete="off" />
+    <button id="loginBtn">লগইন</button>
   </div>
-</div>
 
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  <script>
+    const loginBtn = document.getElementById('loginBtn');
+    const errorMsg = document.getElementById('errorMsg');
 
-  // তোমার Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyDJ_KagqCQzTavn4SU81g9XV29k76cNLF8",
-    authDomain: "pakhi-e3aad.firebaseapp.com",
-    projectId: "pakhi-e3aad",
-    storageBucket: "pakhi-e3aad.firebasestorage.app",
-    messagingSenderId: "235336322769",
-    appId: "1:235336322769:web:6400ff0350ea3c60e2fff0"
-  };
+    // লোকাল ইউজারনেম এবং পাসওয়ার্ড (যেটা তুমি চাইলে পরিবর্তন করতে পারো)
+    const ADMIN_CREDENTIALS = {
+      username: 'kamruls',
+      password: 'sss'
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    loginBtn.onclick = () => {
+      const user = document.getElementById('adminUser').value.trim();
+      const pass = document.getElementById('adminPass').value.trim();
 
-  const loginForm = document.getElementById("loginForm");
-  const adminPanel = document.getElementById("adminPanel");
+      errorMsg.textContent = '';
 
-  function adminLogin() {
-    const username = document.getElementById("adminUsername").value.trim();
-    const password = document.getElementById("adminPassword").value.trim();
-    if (username === "kamruls" && password === "sss") {
-      loginForm.style.display = "none";
-      adminPanel.style.display = "block";
-      loadUsers();
-    } else {
-      alert("ভুল ইউজারনেম বা পাসওয়ার্ড!");
-    }
-  }
+      if (!user || !pass) {
+        errorMsg.textContent = 'দয়া করে ইউজারনেম এবং পাসওয়ার্ড উভয় দিন।';
+        return;
+      }
 
-  async function createUser() {
-    const name = document.getElementById("newUsername").value.trim();
-    const pass = document.getElementById("newUserPassword").value.trim();
-    if (!name || !pass) {
-      alert("সব ঘর পূরণ করুন");
-      return;
-    }
-    try {
-      await addDoc(collection(db, "users"), {
-        username: name,
-        password: pass
-      });
-      alert("ইউজার তৈরি হয়েছে!");
-      document.getElementById("newUsername").value = "";
-      document.getElementById("newUserPassword").value = "";
-    } catch (e) {
-      alert("ইউজার যোগ করতে সমস্যা হয়েছে");
-      console.error(e);
-    }
-  }
+      if (user === ADMIN_CREDENTIALS.username && pass === ADMIN_CREDENTIALS.password) {
+        // লগইন সফল হলে এখানে কাজ করো
+        // উদাহরণ স্বরূপ: অন্য পেজে রিডাইরেক্ট করো:
+        window.location.href = 'admin-dashboard.html';
+      } else {
+        errorMsg.textContent = 'ইউজারনেম বা পাসওয়ার্ড ভুল।';
+      }
+    };
 
-  function loadUsers() {
-    const userListDiv = document.getElementById("userList");
-    onSnapshot(collection(db, "users"), (snapshot) => {
-      userListDiv.innerHTML = "<h3>সব ইউজার</h3>";
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const div = document.createElement("div");
-        div.className = "user-item";
-        div.textContent = `${data.username} - ${data.password}`;
-        userListDiv.appendChild(div);
-      });
+    // ইন্টার দিয়ে লগইন করার জন্য (Optional)
+    document.getElementById('adminPass').addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') loginBtn.click();
     });
-  }
-</script>
-
+  </script>
 </body>
 </html>

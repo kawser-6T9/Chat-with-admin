@@ -6,55 +6,66 @@
   <title>অ্যাডমিন লগইন</title>
   <style>
     body, html {
-      margin:0; padding:0; height:100%;
+      height: 100%; margin: 0; padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background:#f0f2f5;
-      display:flex; justify-content:center; align-items:center;
+      background: #f0f2f5;
+      display: flex; justify-content: center; align-items: center;
     }
     #loginBox {
-      background:white;
-      padding:30px;
-      border-radius:12px;
-      box-shadow:0 0 20px rgba(0,0,0,0.1);
-      width:90%;
-      max-width:400px;
+      background: white;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+      box-sizing: border-box;
     }
     h2 {
-      text-align:center;
-      margin-bottom:25px;
-      color:#222;
+      margin: 0 0 25px;
+      color: #222;
+      text-align: center;
+      font-weight: 700;
     }
     input {
-      width:100%;
-      padding:12px 15px;
-      margin-bottom:15px;
-      font-size:16px;
-      border-radius:8px;
-      border:1px solid #ccc;
-      outline:none;
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 18px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    input:focus {
+      border-color: #2563eb;
     }
     button {
-      width:100%;
-      padding:12px;
-      font-size:18px;
-      background:#2563eb;
-      color:white;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:700;
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      background-color: #2563eb;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
     button:hover {
-      background:#1e40af;
+      background-color: #1e40af;
     }
     #errorMsg {
-      color:red;
-      margin-bottom:15px;
-      text-align:center;
+      color: red;
+      margin-bottom: 15px;
+      text-align: center;
+      min-height: 20px;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
+
   <div id="loginBox">
     <h2>অ্যাডমিন লগইন</h2>
     <div id="errorMsg"></div>
@@ -67,7 +78,7 @@
     const loginBtn = document.getElementById('loginBtn');
     const errorMsg = document.getElementById('errorMsg');
 
-    // তোমার অ্যাডমিন ইউজারনেম ও পাসওয়ার্ড এখানে সেট করো
+    // তোমার অ্যাডমিন ইউজারনেম ও পাসওয়ার্ড এখানে
     const ADMIN_CREDENTIALS = {
       username: 'Kamruls',
       password: 'sss'
@@ -85,21 +96,21 @@
       }
 
       if (user === ADMIN_CREDENTIALS.username && pass === ADMIN_CREDENTIALS.password) {
-        // লগইন সফল হলে localStorage-এ লগইন তথ্য রাখো
+        // সফল লগইন হলে localStorage এ টোকেন রাখবে
         localStorage.setItem('adminLoggedIn', 'true');
-        // ড্যাশবোর্ড পেজে রিডাইরেক্ট করো
+        // অ্যাডমিন ড্যাশবোর্ডে রিডাইরেক্ট করবে
         window.location.href = 'admin-dashboard.html';
       } else {
         errorMsg.textContent = 'ইউজারনেম বা পাসওয়ার্ড ভুল।';
       }
     };
 
-    // ইন্টার কী প্রেস করেও লগইন করা যাবে
+    // এন্টার প্রেস করেও লগইন হবে
     document.getElementById('adminPass').addEventListener('keyup', function(e) {
       if (e.key === 'Enter') loginBtn.click();
     });
 
-    // যদি ইতিমধ্যে লগইন থাকে, তাহলে সরাসরি ড্যাশবোর্ডে নিয়ে যাবে
+    // যদি ইতিমধ্যে লগইন থাকে তাহলে সরাসরি ড্যাশবোর্ডে নিয়ে যাবে
     window.onload = () => {
       if (localStorage.getItem('adminLoggedIn') === 'true') {
         window.location.href = 'admin-dashboard.html';

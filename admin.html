@@ -1,115 +1,115 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Pakhi Chat - Admin</title>
-<style>
-  :root{--primary:#2563eb;--bg:#f3f4f6;--card:#fff}
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto}
-  body{background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center} /* Center the admin modal */
-  header{background:linear-gradient(90deg,var(--primary),#1e40af);color:#fff;padding:12px 14px;font-weight:800;display:flex;justify-content:space-between;align-items:center;width:100%;position:fixed;top:0}
-  .modal{position:relative;background:rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;z-index:999;width:100%;height:100%;}
-  .card{background:#fff;padding:16px;border-radius:12px;width:92%;max-width:420px;box-shadow:0 4px 14px rgba(2,6,23,0.06)}
-  .card h3{margin:0 0 8px}
-  .field{margin-top:8px}
-  .field input{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd}
-  .btn{display:inline-block;padding:10px 12px;border-radius:8px;border:none;background:var(--primary);color:#fff;font-weight:800;margin-top:10px}
-  .link{color:var(--primary);font-weight:800;text-decoration:none}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pakhi Chat - Admin Panel</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+    header { background: #007bff; color: white; padding: 10px; text-align: center; }
+    #loginForm, #adminPanel { max-width: 400px; margin: 30px auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
+    input, button { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; }
+    button { background: #007bff; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .user-list { margin-top: 20px; }
+    .user-item { padding: 8px; border-bottom: 1px solid #eee; }
+  </style>
 </head>
 <body>
+
 <header>
-  <div>Pakhi Chat — Admin Panel</div>
-  <div class="right">
-    <a href="index.html" class="btn" style="background:#111827">Go to Chat</a>
-  </div>
+  <h1>Pakhi Chat - অ্যাডমিন প্যানেল</h1>
 </header>
 
-<div id="adminModal" class="modal">
-  <div class="card">
-    <h3>Admin Login</h3>
-    <div class="field"><input id="adminUser" placeholder="Username" /></div>
-    <div class="field"><input id="adminPass" type="password" placeholder="Password" /></div>
-    <button id="adminLoginBtn" class="btn">Login</button>
-    <div id="adminArea" style="display:none;margin-top:12px">
-      <h3>নতুন ইউজার তৈরি</h3>
-      <div class="field"><input id="newUserName" placeholder="Name (exact)" /></div>
-      <div class="field"><input id="newUserPass" placeholder="Password to give user" /></div>
-      <button id="createUserBtn" class="btn">Create User</button>
-      <div style="margin-top:12px"><button id="closeAdmin" class="btn" style="background:#ef4444" onclick="location.reload()">Reset/Logout</button></div>
-    </div>
+<!-- Login Form -->
+<div id="loginForm">
+  <h2>অ্যাডমিন লগইন</h2>
+  <input type="text" id="adminUsername" placeholder="ইউজারনেম"/>
+  <input type="password" id="adminPassword" placeholder="পাসওয়ার্ড"/>
+  <button onclick="adminLogin()">লগইন</button>
+</div>
+
+<!-- Admin Panel -->
+<div id="adminPanel" style="display:none;">
+  <h2>নতুন ইউজার তৈরি</h2>
+  <input type="text" id="newUsername" placeholder="ইউজারের নাম"/>
+  <input type="password" id="newUserPassword" placeholder="পাসওয়ার্ড"/>
+  <button onclick="createUser()">ইউজার যোগ করো</button>
+
+  <div class="user-list" id="userList">
+    <h3>সব ইউজার</h3>
+    <!-- User list will be loaded here -->
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script>
-// ---------------- CONFIG ----------------
-const firebaseConfig = {
-  apiKey: "AIzaSyDJ_KagqCQzTavn4SU81g9XV29k76cNLF8",
-  authDomain: "pakhi-e3aad.firebaseapp.com",
-  projectId: "pakhi-e3aad",
-  storageBucket: "pakhi-e3aad.firebasestorage.app",
-  messagingSenderId: "235336322769",
-  appId: "1:235336322769:web:6400ff0350ea3c60e2fff0"
-};
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// Fixed admin credentials (as you requested)
-const ADMIN_USER = 'kamruls';
-const ADMIN_PASS = 'sss';
+  // তোমার Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDJ_KagqCQzTavn4SU81g9XV29k76cNLF8",
+    authDomain: "pakhi-e3aad.firebaseapp.com",
+    projectId: "pakhi-e3aad",
+    storageBucket: "pakhi-e3aad.firebasestorage.app",
+    messagingSenderId: "235336322769",
+    appId: "1:235336322769:web:6400ff0350ea3c60e2fff0"
+  };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-// ---------------- helpers ----------------
-function el(id){return document.getElementById(id)}
-function show(elm){elm.style.display='flex'} // Note: for adminArea, display is 'block'
-function hide(elm){elm.style.display='none'}
+  const loginForm = document.getElementById("loginForm");
+  const adminPanel = document.getElementById("adminPanel");
 
-async function sha256(str){const encoder=new TextEncoder();const data=encoder.encode(str);const hash=await crypto.subtle.digest('SHA-256',data);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('')}
-
-// ---------------- UI refs ----------------
-const adminUser = el('adminUser');
-const adminPass = el('adminPass');
-const adminLoginBtn = el('adminLoginBtn');
-const adminArea = el('adminArea');
-const newUserName = el('newUserName');
-const newUserPass = el('newUserPass');
-const createUserBtn = el('createUserBtn');
-
-// ---------------- Admin flow ----------------
-adminLoginBtn.addEventListener('click', ()=>{
-  const u = adminUser.value.trim();
-  const p = adminPass.value.trim();
-  if(u===ADMIN_USER && p===ADMIN_PASS){
-    // show admin area
-    adminArea.style.display='block'; // Use 'block' for layout
-    adminUser.style.display='none';
-    adminPass.style.display='none';
-    adminLoginBtn.style.display='none';
-  } else {
-    alert('Admin credentials wrong');
+  function adminLogin() {
+    const username = document.getElementById("adminUsername").value.trim();
+    const password = document.getElementById("adminPassword").value.trim();
+    if (username === "kamruls" && password === "sss") {
+      loginForm.style.display = "none";
+      adminPanel.style.display = "block";
+      loadUsers();
+    } else {
+      alert("ভুল ইউজারনেম বা পাসওয়ার্ড!");
+    }
   }
-});
 
-createUserBtn.addEventListener('click', async ()=>{
-  const name = newUserName.value.trim();
-  const pass = newUserPass.value.trim();
-  if(!name || !pass) return alert('Name and password required');
-  const h = await sha256(pass);
-  try {
-    await db.collection('users').doc(name).set({hash: h, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
-    alert('User created: '+name+'\nGive this password to user so they can login.');
-    newUserName.value='';
-    newUserPass.value='';
-  } catch (error) {
-    console.error("Error creating user: ", error);
-    alert("Error creating user. Check console for details.");
+  async function createUser() {
+    const name = document.getElementById("newUsername").value.trim();
+    const pass = document.getElementById("newUserPassword").value.trim();
+    if (!name || !pass) {
+      alert("সব ঘর পূরণ করুন");
+      return;
+    }
+    try {
+      await addDoc(collection(db, "users"), {
+        username: name,
+        password: pass
+      });
+      alert("ইউজার তৈরি হয়েছে!");
+      document.getElementById("newUsername").value = "";
+      document.getElementById("newUserPassword").value = "";
+    } catch (e) {
+      alert("ইউজার যোগ করতে সমস্যা হয়েছে");
+      console.error(e);
+    }
   }
-});
 
+  function loadUsers() {
+    const userListDiv = document.getElementById("userList");
+    onSnapshot(collection(db, "users"), (snapshot) => {
+      userListDiv.innerHTML = "<h3>সব ইউজার</h3>";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement("div");
+        div.className = "user-item";
+        div.textContent = `${data.username} - ${data.password}`;
+        userListDiv.appendChild(div);
+      });
+    });
+  }
 </script>
+
 </body>
 </html>

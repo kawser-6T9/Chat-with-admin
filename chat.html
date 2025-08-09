@@ -3,77 +3,63 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pakhi Chat - Modern Theme</title>
+<title>Pakhi Chat without Firebase Storage</title>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
   body, html {
-    margin: 0; padding: 0; height: 100%;
-    font-family: 'Inter', sans-serif;
-    background: #f5f7fa;
+    margin:0; padding:0; height:100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f4f8 url('https://www.transparenttextures.com/patterns/cubes.png') repeat;
     display: flex;
     flex-direction: column;
   }
   header {
-    background: #2d3748;
-    color: #f7fafc;
-    padding: 14px 20px;
+    background: #2563eb;
+    color: white;
+    padding: 15px 20px;
     font-size: 22px;
     font-weight: 700;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
   }
   #userNameDisplay {
-    position: relative;
     cursor: pointer;
+    position: relative;
   }
   #logoutBtn {
-    background: #e53e3e;
+    background: #f87171;
     border: none;
     color: white;
-    font-weight: 600;
-    padding: 6px 14px;
+    font-weight: 700;
+    padding: 6px 12px;
     border-radius: 6px;
     font-size: 14px;
     cursor: pointer;
     position: absolute;
-    top: 38px;
+    top: 35px;
     right: 0;
+    display: none;
     opacity: 0;
-    pointer-events: none;
     transition: opacity 0.3s ease;
-    white-space: nowrap;
   }
   #userNameDisplay:hover #logoutBtn {
+    display: block;
     opacity: 1;
-    pointer-events: auto;
   }
-
   main {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
-    background: linear-gradient(135deg, #eef2f7, #d6dbdf);
+    padding: 15px 20px;
     scroll-behavior: smooth;
   }
-
   .message-wrapper {
-    max-width: 70%;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     display: flex;
     align-items: flex-end;
-    animation: slideFadeIn 0.35s ease forwards;
+    max-width: 80%;
+    position: relative;
   }
-  @keyframes slideFadeIn {
-    from {opacity: 0; transform: translateY(20px);}
-    to {opacity: 1; transform: translateY(0);}
-  }
-
   .message-left {
     flex-direction: row;
   }
@@ -81,178 +67,102 @@
     flex-direction: row-reverse;
     margin-left: auto;
   }
-
   .profile-circle {
-    width: 40px; height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: #3182ce;
+    background: #2563eb;
     color: white;
     font-weight: 700;
     font-size: 18px;
-    line-height: 40px;
+    line-height: 36px;
     text-align: center;
     user-select: none;
+    margin: 0 10px;
     flex-shrink: 0;
-    margin: 0 12px;
-    box-shadow: 0 3px 8px rgb(49 130 206 / 0.4);
   }
-
   .message-box {
     background: white;
-    padding: 12px 18px;
-    border-radius: 18px;
-    font-size: 16px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 15px;
     line-height: 1.3;
-    position: relative;
-    cursor: pointer;
-    box-shadow: 0 3px 10px rgb(0 0 0 / 0.05);
+    max-width: 320px;
     word-wrap: break-word;
-    color: #2d3748;
-    user-select: text;
-    max-width: 100%;
-    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    cursor: pointer;
   }
   .message-right .message-box {
-    background: #2b6cb0;
+    background: #2563eb;
     color: white;
-    box-shadow: 0 3px 14px rgb(43 108 176 / 0.6);
+    box-shadow: 0 2px 8px rgba(37,99,235,0.6);
   }
-
   .message-meta {
     font-size: 11px;
-    margin-top: 6px;
+    margin-top: 4px;
     user-select: none;
   }
   .message-meta-left {
-    color: #718096;
+    color: #475569;
   }
   .message-meta-right {
-    color: #a0aec0;
+    color: #a5b4fc;
     text-align: right;
   }
-
   #inputArea {
     display: flex;
-    padding: 14px 20px;
+    padding: 12px 15px;
     background: white;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0 -2px 12px rgb(0 0 0 / 0.08);
+    gap: 10px;
+    box-shadow: 0 -1px 6px rgba(0,0,0,0.1);
     position: sticky;
     bottom: 0;
-    z-index: 20;
+    z-index: 10;
   }
   #messageInput {
     flex: 1;
-    border: 1.8px solid #cbd5e0;
+    border: 1.5px solid #ccc;
     border-radius: 30px;
-    padding: 12px 22px;
+    padding: 10px 20px;
     font-size: 16px;
     outline: none;
     transition: border-color 0.3s ease;
-    color: #2d3748;
   }
   #messageInput:focus {
-    border-color: #3182ce;
+    border-color: #2563eb;
   }
   #sendBtn {
-    background: #3182ce;
+    background: #2563eb;
     border: none;
     border-radius: 50%;
-    width: 46px;
-    height: 46px;
+    width: 42px;
+    height: 42px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 3px 14px rgb(49 130 206 / 0.6);
-    transition: background-color 0.25s ease;
-  }
-  #sendBtn:disabled {
-    background: #a0aec0;
-    cursor: not-allowed;
-    box-shadow: none;
   }
   #sendBtn svg {
     fill: white;
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
   }
-
   #imageUpload {
     display: none;
   }
   #imageLabel {
     cursor: pointer;
-    font-size: 26px;
-    color: #3182ce;
-    user-select: none;
+    font-size: 22px;
+    color: #2563eb;
+    user-select:none;
   }
-
-  .popup-menu {
-    position: absolute;
-    top: -40px;
-    right: 0;
-    background: #2b6cb0;
-    color: white;
-    font-size: 14px;
-    border-radius: 8px;
-    padding: 6px 10px;
-    display: flex;
-    gap: 12px;
-    user-select: none;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    z-index: 100;
-    box-shadow: 0 3px 8px rgb(43 108 176 / 0.7);
+  img.chat-image {
+    max-width: 250px;
+    border-radius: 12px;
+    display: block;
+    margin-top: 5px;
   }
-  .popup-menu.show {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .popup-menu button {
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 5px;
-    transition: background-color 0.2s ease;
-  }
-  .popup-menu button:hover {
-    background-color: #1e40af;
-  }
-
-  #replyBar {
-    background: #2b6cb0;
-    color: white;
-    padding: 10px 18px;
-    font-size: 14px;
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    user-select: none;
-    border-radius: 0 0 18px 18px;
-  }
-  #replyBar span {
-    font-weight: 600;
-    max-width: 80%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  #replyBar button {
-    background: transparent;
-    border: none;
-    color: white;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 18px;
-    line-height: 1;
-  }
-
 </style>
 </head>
 <body>
@@ -263,16 +173,11 @@
 
 <main id="chatArea"></main>
 
-<div id="replyBar">
-  <span id="replyText"></span>
-  <button id="cancelReplyBtn" title="Cancel reply">×</button>
-</div>
-
 <div id="inputArea">
   <label for="imageUpload" id="imageLabel" title="ছবি পাঠাও 📷">📷</label>
   <input type="file" accept="image/*" id="imageUpload" />
   <input type="text" id="messageInput" placeholder="বার্তা লিখুন..." autocomplete="off" />
-  <button id="sendBtn" title="পাঠাও" disabled>
+  <button id="sendBtn" title="পাঠাও">
     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
   </button>
 </div>
@@ -281,11 +186,8 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
   import {
     getFirestore, collection, query, orderBy, onSnapshot,
-    addDoc, serverTimestamp, doc, updateDoc
+    addDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
-  import {
-    getStorage, ref, uploadBytes, getDownloadURL
-  } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
 
   // Firebase config
   const firebaseConfig = {
@@ -297,264 +199,150 @@
     appId: "1:604406589995:web:8baddc0c5752386ffb586e"
   };
 
+  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const storage = getStorage(app);
 
-  const currentUser = localStorage.getItem('fdUser') || 'Unknown User';
+  const currentUser = localStorage.getItem('fdUser') || 'Unknown';
+
   const userNameDisplay = document.getElementById('userNameDisplay');
   userNameDisplay.textContent = currentUser;
 
-  // Logout button
+  // Logout btn on username hover
   const logoutBtn = document.createElement('button');
-  logoutBtn.id = 'logoutBtn';
   logoutBtn.textContent = 'লগআউট';
+  logoutBtn.style.cssText = `
+    background: #f87171; border:none; color:white; font-weight:700;
+    padding:6px 12px; border-radius:6px; font-size:14px;
+    cursor:pointer; position:absolute; top:35px; right:0; display:none;
+    opacity:0; transition: opacity 0.3s ease;
+  `;
+  userNameDisplay.style.position = 'relative';
   userNameDisplay.appendChild(logoutBtn);
+
+  userNameDisplay.onmouseenter = () => {
+    logoutBtn.style.display = 'block';
+    setTimeout(() => logoutBtn.style.opacity = '1', 10);
+  };
+  userNameDisplay.onmouseleave = () => {
+    logoutBtn.style.opacity = '0';
+    setTimeout(() => logoutBtn.style.display = 'none', 300);
+  };
 
   logoutBtn.onclick = () => {
     localStorage.removeItem('fdUser');
-    location.href = 'index.html';
+    window.location.href = 'index.html';
   };
 
   const chatArea = document.getElementById('chatArea');
   const messageInput = document.getElementById('messageInput');
   const sendBtn = document.getElementById('sendBtn');
   const imageUpload = document.getElementById('imageUpload');
-  const replyBar = document.getElementById('replyBar');
-  const replyText = document.getElementById('replyText');
-  const cancelReplyBtn = document.getElementById('cancelReplyBtn');
 
-  let replyToMessage = null;
-  let imageFile = null;
-  let sendCooldown = false;
-
-  // Enable send button only if input or image selected
-  function updateSendBtnState() {
-    sendBtn.disabled = !(messageInput.value.trim() || imageFile);
-  }
-  messageInput.addEventListener('input', updateSendBtnState);
-  imageUpload.addEventListener('change', (e) => {
-    if (e.target.files.length) {
-      imageFile = e.target.files[0];
-    } else {
-      imageFile = null;
-    }
-    updateSendBtnState();
-  });
-
-  // Reply bar handlers
-  function showReplyBar(text) {
-    replyText.textContent = 'Replying to: ' + text;
-    replyBar.style.display = 'flex';
-  }
-  function hideReplyBar() {
-    replyToMessage = null;
-    replyBar.style.display = 'none';
-  }
-  cancelReplyBtn.onclick = hideReplyBar;
-
-  // Format time
-  function formatTime(ts) {
-    if (!ts) return '';
-    let d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-  }
-
-  // Create message element
-  function createMessageElement(msg) {
-    const isCurrentUser = msg.sender === currentUser;
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('message-wrapper', isCurrentUser ? 'message-right' : 'message-left');
-    wrapper.dataset.id = msg.id;
-
-    // Profile circle
-    const profileCircle = document.createElement('div');
-    profileCircle.className = 'profile-circle';
-    profileCircle.textContent = msg.sender.charAt(0).toUpperCase();
-
-    // Message box
-    const msgBox = document.createElement('div');
-    msgBox.className = 'message-box';
-
-    // Deleted message
-    if (msg.deleted) {
-      msgBox.textContent = 'This message was deleted';
-      msgBox.style.fontStyle = 'italic';
-      msgBox.style.color = isCurrentUser ? 'rgba(255 255 255 / 0.7)' : '#555';
-    } else {
-      // Reply snippet
-      if (msg.replyToText) {
-        const replyDiv = document.createElement('div');
-        replyDiv.style.fontSize = '13px';
-        replyDiv.style.marginBottom = '6px';
-        replyDiv.style.paddingLeft = '10px';
-        replyDiv.style.borderLeft = '3px solid ' + (isCurrentUser ? '#90cdf4' : '#3182ce');
-        replyDiv.style.color = isCurrentUser ? '#bee3f8' : '#3182ce';
-        replyDiv.textContent = msg.replyToText.length > 40 ? msg.replyToText.slice(0, 40) + '...' : msg.replyToText;
-        msgBox.appendChild(replyDiv);
-      }
-
-      // Show text or image
-      if (msg.imageUrl) {
-        const img = document.createElement('img');
-        img.src = msg.imageUrl;
-        img.style.maxWidth = '100%';
-        img.style.borderRadius = '12px';
-        img.style.cursor = 'pointer';
-        img.alt = "Image";
-        msgBox.appendChild(img);
-      }
-      if (msg.text) {
-        const p = document.createElement('p');
-        p.textContent = msg.text;
-        p.style.margin = '0';
-        msgBox.appendChild(p);
-      }
-    }
-
-    // Meta info (sender name + time)
-    const meta = document.createElement('div');
-    meta.classList.add('message-meta', isCurrentUser ? 'message-meta-right' : 'message-meta-left');
-    meta.textContent = msg.sender + ' • ' + formatTime(msg.createdAt);
-    msgBox.appendChild(meta);
-
-    wrapper.appendChild(profileCircle);
-    wrapper.appendChild(msgBox);
-
-    // Popup menu for reply/delete
-    const popup = document.createElement('div');
-    popup.className = 'popup-menu';
-
-    const replyBtn = document.createElement('button');
-    replyBtn.textContent = 'Reply';
-    popup.appendChild(replyBtn);
-
-    if (isCurrentUser) {
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Delete';
-      popup.appendChild(deleteBtn);
-      deleteBtn.onclick = async (e) => {
-        e.stopPropagation();
-        if (confirm('আপনি কি এই মেসেজটি ডিলিট করতে চান?')) {
-          try {
-            await updateDoc(doc(db, 'messages', msg.id), {
-              deleted: true,
-              text: '',
-              imageUrl: '',
-              replyToText: ''
-            });
-          } catch (error) {
-            // message delete error handling
-          alert('মেসেজ ডিলেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
-          console.error(error);
-        }
-      };
-    }
-
-    replyBtn.onclick = (e) => {
-      e.stopPropagation();
-      replyToMessage = msg;
-      showReplyBar(msg.text || (msg.imageUrl ? 'Image' : ''));
-    };
-
-    wrapper.appendChild(popup);
-
-    // Show/hide popup on message box click
-    msgBox.onclick = (e) => {
-      e.stopPropagation();
-      // Hide all other popups first
-      document.querySelectorAll('.popup-menu').forEach(menu => {
-        if(menu !== popup) menu.classList.remove('show');
-      });
-      popup.classList.toggle('show');
-    };
-
-    // Click outside popup closes all popups
-    document.body.addEventListener('click', () => {
-      popup.classList.remove('show');
+  // Convert file to base64
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = err => reject(err);
+      reader.readAsDataURL(file);
     });
-
-    return wrapper;
   }
 
-  // Auto scroll chat to bottom
-  function scrollToBottom() {
-    chatArea.scrollTop = chatArea.scrollHeight;
-  }
-
-  // Load messages from Firestore and listen realtime
-  const messagesCol = collection(db, 'messages');
-  const q = query(messagesCol, orderBy('createdAt', 'asc'));
-
-  onSnapshot(q, (snapshot) => {
-    chatArea.innerHTML = '';
-    snapshot.forEach(docSnap => {
-      const msgData = docSnap.data();
-      msgData.id = docSnap.id;
-      const msgElem = createMessageElement(msgData);
-      chatArea.appendChild(msgElem);
-    });
-    scrollToBottom();
-  });
-
-  // Send message function
+  // Send message (text or image base64)
   async function sendMessage() {
-    if(sendCooldown) return;
     const text = messageInput.value.trim();
-    if(!text && !imageFile) return;
+    const file = imageUpload.files[0];
 
-    sendBtn.disabled = true;
-    sendCooldown = true;
+    if (!text && !file) {
+      alert('কোনো বার্তা বা ছবি সিলেক্ট করুন');
+      return;
+    }
 
-    let imageUrl = '';
-    if(imageFile) {
-      const storageRef = ref(storage, `chatImages/${Date.now()}_${imageFile.name}`);
+    let imageBase64 = null;
+    if (file) {
       try {
-        await uploadBytes(storageRef, imageFile);
-        imageUrl = await getDownloadURL(storageRef);
-      } catch (error) {
-        alert('ছবি আপলোডে সমস্যা হয়েছে।');
-        console.error(error);
-        sendBtn.disabled = false;
-        sendCooldown = false;
+        imageBase64 = await fileToBase64(file);
+      } catch (e) {
+        alert('ছবি রূপান্তরে সমস্যা হয়েছে');
         return;
       }
     }
 
-    try {
-      await addDoc(messagesCol, {
-        sender: currentUser,
-        text: text,
-        imageUrl: imageUrl,
-        createdAt: serverTimestamp(),
-        replyToText: replyToMessage ? replyToMessage.text || (replyToMessage.imageUrl ? 'Image' : '') : '',
-        deleted: false,
-      });
-    } catch (error) {
-      alert('মেসেজ পাঠাতে সমস্যা হয়েছে।');
-      console.error(error);
-    }
+    // Prepare message object
+    const messageData = {
+      sender: currentUser,
+      timestamp: serverTimestamp(),
+      text: text || null,
+      image: imageBase64 || null,
+    };
 
+    await addDoc(collection(db, "messages"), messageData);
+
+    // Clear input
     messageInput.value = '';
     imageUpload.value = '';
-    imageFile = null;
-    hideReplyBar();
-    updateSendBtnState();
-
-    setTimeout(() => {
-      sendBtn.disabled = false;
-      sendCooldown = false;
-    }, 1000);
+    messageInput.focus();
   }
 
   sendBtn.onclick = sendMessage;
-
-  messageInput.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+  messageInput.addEventListener('keypress', e => {
+    if (e.key === 'Enter') sendMessage();
   });
+
+  // Render message
+  function renderMessage(msg) {
+    const isCurrentUser = msg.sender === currentUser;
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('message-wrapper', isCurrentUser ? 'message-right' : 'message-left');
+
+    // Profile Circle
+    const profileCircle = document.createElement('div');
+    profileCircle.className = 'profile-circle';
+    profileCircle.textContent = msg.sender.charAt(0).toUpperCase();
+
+    // Message Box
+    const msgBox = document.createElement('div');
+    msgBox.className = 'message-box';
+
+    if (msg.text) {
+      msgBox.textContent = msg.text;
+    }
+    if (msg.image) {
+      const img = document.createElement('img');
+      img.className = 'chat-image';
+      img.src = msg.image;
+      msgBox.appendChild(document.createElement('br'));
+      msgBox.appendChild(img);
+    }
+
+    // Meta (name + time)
+    const meta = document.createElement('div');
+    meta.className = 'message-meta ' + (isCurrentUser ? 'message-meta-right' : 'message-meta-left');
+    const timeString = msg.timestamp && msg.timestamp.toDate ? msg.timestamp.toDate().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+    meta.textContent = `${msg.sender} • ${timeString}`;
+
+    // Append all
+    wrapper.appendChild(profileCircle);
+    wrapper.appendChild(msgBox);
+    wrapper.appendChild(meta);
+
+    return wrapper;
+  }
+
+  // Listen for new messages realtime
+  const q = query(collection(db, "messages"), orderBy("timestamp"));
+  onSnapshot(q, (snapshot) => {
+    chatArea.innerHTML = ''; // clear old messages
+    snapshot.forEach(doc => {
+      const msg = doc.data();
+      msg.id = doc.id;
+      chatArea.appendChild(renderMessage(msg));
+    });
+    chatArea.scrollTop = chatArea.scrollHeight; // scroll to bottom
+  });
+
 </script>
 
 </body>

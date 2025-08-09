@@ -1,71 +1,216 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Pakhi Chat</title>
-<link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>অ্যাডমিন ড্যাশবোর্ড</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+  body, html {
+    margin:0; padding:0; font-family: 'Roboto', sans-serif;
+    background: #eef2ff url('https://www.transparenttextures.com/patterns/geometry2.png') repeat;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  header {
+    background: #4f46e5;
+    color: white;
+    padding: 15px 20px;
+    font-size: 24px;
+    font-weight: 700;
+    user-select:none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header button.logoutBtn {
+    background: #ef4444;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  header button.logoutBtn:hover {
+    background: #b91c1c;
+  }
+
+  main {
+    flex: 1;
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+    overflow-x: auto;
+  }
+
+  h2 {
+    color: #1e293b;
+    margin-bottom: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 12px rgb(0 0 0 / 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 15px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  th {
+    background: #6366f1;
+    color: white;
+  }
+  tr:hover {
+    background: #e0e7ff;
+  }
+  button.actionBtn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  button.approveBtn {
+    background-color: #10b981;
+  }
+  button.approveBtn:hover {
+    background-color: #059669;
+  }
+  button.banBtn {
+    background-color: #ef4444;
+  }
+  button.banBtn:hover {
+    background-color: #b91c1c;
+  }
+  button.unbanBtn {
+    background-color: #3b82f6;
+  }
+  button.unbanBtn:hover {
+    background-color: #2563eb;
+  }
+</style>
 </head>
 <body>
 
-<header class="topbar">
-  <div class="title">Pakhi-chat</div>
-  <div id="userBox" class="user-box">
-    <div id="userAvatar" class="avatar small"></div>
-    <div id="userName" class="username"></div>
-  </div>
+<header>
+  অ্যাডমিন ড্যাশবোর্ড
+  <button class="logoutBtn" id="logoutBtn">লগআউট</button>
 </header>
 
-<main id="chatWrap">
-  <div id="messages" class="messages" aria-live="polite"></div>
-
-  <div id="replyBar" class="reply-bar" title="ক্লিক করলে রিপ্লাই বাতিল হবে">
-    Replying to: <span id="replyText"></span>
-  </div>
-
-  <div class="input-area">
-    <button id="imgBtn" class="icon-btn" title="ছবি পাঠাও">📷</button>
-    <input id="imageInput" type="file" accept="image/*" style="display:none"/>
-    <input id="messageInput" class="message-input" placeholder="মেসেজ লিখুন..." autocomplete="off" />
-    <button id="sendBtn" class="btn-primary">পাঠাও</button>
-  </div>
+<main>
+  <h2>ইউজার তালিকা</h2>
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>নাম</th>
+        <th>অনুমোদিত</th>
+        <th>নিষিদ্ধ</th>
+        <th>লগইন সময়</th>
+        <th>অ্যাকশন</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- ইউজার ডেটা এখানে আসবে -->
+    </tbody>
+  </table>
 </main>
 
-<script type="module" src="js/chat.js"></script>
-</body>
-</html><!DOCTYPE html>
-<html lang="bn">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Pakhi Chat</title>
-<link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+<script type="module">
+// Firebase SDK import
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-<header class="topbar">
-  <div class="title">Pakhi-chat</div>
-  <div id="userBox" class="user-box">
-    <div id="userAvatar" class="avatar small"></div>
-    <div id="userName" class="username"></div>
-  </div>
-</header>
+// তোমার Firebase কনফিগারেশন
+const firebaseConfig = {
+  apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
+  authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
+  projectId: "chat-with-admin-1ca1a",
+  storageBucket: "chat-with-admin-1ca1a.firebaseapp.com",
+  messagingSenderId: "604406589995",
+  appId: "1:604406589995:web:8baddc0c5752386ffb586e"
+};
 
-<main id="chatWrap">
-  <div id="messages" class="messages" aria-live="polite"></div>
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  <div id="replyBar" class="reply-bar" title="ক্লিক করলে রিপ্লাই বাতিল হবে">
-    Replying to: <span id="replyText"></span>
-  </div>
+const logoutBtn = document.getElementById('logoutBtn');
+const tbody = document.querySelector('#userTable tbody');
 
-  <div class="input-area">
-    <button id="imgBtn" class="icon-btn" title="ছবি পাঠাও">📷</button>
-    <input id="imageInput" type="file" accept="image/*" style="display:none"/>
-    <input id="messageInput" class="message-input" placeholder="মেসেজ লিখুন..." autocomplete="off" />
-    <button id="sendBtn" class="btn-primary">পাঠাও</button>
-  </div>
-</main>
+// লগআউট ফাংশন
+logoutBtn.onclick = () => {
+  localStorage.removeItem('adminLoggedIn');
+  window.location.href = 'admin-login.html';
+};
 
-<script type="module" src="js/chat.js"></script>
+// অ্যাডমিন লগইন চেক (localStorage থেকে)
+window.onload = () => {
+  if (!localStorage.getItem('adminLoggedIn')) {
+    window.location.href = 'admin-login.html';
+  }
+};
+
+// Firestore থেকে রিয়েলটাইম ইউজার ডাটা লোড
+const usersCol = collection(db, "users");
+
+onSnapshot(usersCol, (snapshot) => {
+  tbody.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const id = docSnap.id;
+
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+      <td>${data.name || 'অজানা'}</td>
+      <td>${data.approved ? "হ্যাঁ" : "না"}</td>
+      <td>${data.banned ? "হ্যাঁ" : "না"}</td>
+      <td>${data.loginTime || '-'}</td>
+      <td>
+        ${!data.approved ? `<button class="actionBtn approveBtn" data-id="${id}">অনুমোদন করো</button>` : ''}
+        ${data.banned 
+          ? `<button class="actionBtn unbanBtn" data-id="${id}">আনব্যান</button>` 
+          : `<button class="actionBtn banBtn" data-id="${id}">ব্যান</button>`}
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+
+  // অ্যাকশন বাটনের ইভেন্ট
+  document.querySelectorAll('.approveBtn').forEach(btn => {
+    btn.onclick = async (e) => {
+      const userId = e.target.getAttribute('data-id');
+      await updateDoc(doc(db, "users", userId), { approved: true });
+      alert('ইউজার অনুমোদিত হয়েছে।');
+    };
+  });
+
+  document.querySelectorAll('.banBtn').forEach(btn => {
+    btn.onclick = async (e) => {
+      const userId = e.target.getAttribute('data-id');
+      await updateDoc(doc(db, "users", userId), { banned: true });
+      alert('ইউজার নিষিদ্ধ করা হয়েছে।');
+    };
+  });
+
+  document.querySelectorAll('.unbanBtn').forEach(btn => {
+    btn.onclick = async (e) => {
+      const userId = e.target.getAttribute('data-id');
+      await updateDoc(doc(db, "users", userId), { banned: false });
+      alert('ইউজার নিষিদ্ধ অবস্থা থেকে মুক্তি পেয়েছে।');
+    };
+  });
+});
+</script>
+
 </body>
 </html>

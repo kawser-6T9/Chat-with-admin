@@ -3,159 +3,193 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>চ্যাট অ্যাপ লগইন</title>
+  <title>Pakhi Chat লগইন</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
     body, html {
-      height: 100%;
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f0f2f5;
+      margin: 0; padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f3f4f6 url('https://www.transparenttextures.com/patterns/cubes.png') repeat;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow: hidden;
     }
     #loginBox {
       background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      width: 90%;
+      padding: 25px 30px;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      width: 95%;
       max-width: 400px;
       text-align: center;
+    }
+    h2 {
+      margin-bottom: 25px;
+      color: #2563eb;
+      font-weight: 700;
+      font-size: 28px;
     }
     input {
       width: 100%;
       padding: 12px 15px;
-      margin: 10px 0;
+      margin-bottom: 18px;
       font-size: 16px;
       border-radius: 8px;
-      border: 1px solid #ccc;
+      border: 1.5px solid #ccc;
       outline: none;
+      transition: border-color 0.3s ease;
+    }
+    input:focus {
+      border-color: #2563eb;
     }
     button {
       width: 100%;
-      padding: 12px;
-      font-size: 18px;
+      padding: 13px;
       background: #2563eb;
-      color: white;
       border: none;
       border-radius: 8px;
-      cursor: pointer;
+      color: white;
+      font-size: 18px;
       font-weight: 700;
-      margin-top: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
     button:hover {
       background: #1e40af;
     }
     #errorMsg {
-      color: red;
-      margin-top: 10px;
-      min-height: 24px;
+      margin-bottom: 15px;
+      color: #dc2626;
+      font-weight: 600;
+    }
+    #contactLinks {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #444;
+    }
+    #contactLinks a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+      margin: 0 8px;
+    }
+    #contactLinks a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
 
   <div id="loginBox">
-    <h2>লগইন করুন</h2>
-    <input type="text" id="username" placeholder="নাম লিখুন" autocomplete="off" />
-    <input type="password" id="password" placeholder="পাসওয়ার্ড লিখুন" autocomplete="off" />
-    <button id="loginBtn">লগইন</button>
+    <h2>Pakhi Chat লগইন</h2>
     <div id="errorMsg"></div>
-    <p style="margin-top:20px; font-size:14px; color:#555;">
-      নতুন ইউজার? নাম ও পাসওয়ার্ড দিয়ে লগইন করলে অনুমোদনের জন্য রিকোয়েস্ট যাবে।<br/>
-      অনুমোদিত হলে চ্যাট করতে পারবেন।<br/>
-      সাহায্যের জন্য: <a href="https://m.me/kawser.ahmed.88690" target="_blank">Messenger</a> | <a href="https://wa.me/+8801750868119" target="_blank">WhatsApp</a>
-    </p>
+    <input type="text" id="userName" placeholder="তোমার নাম লিখো" autocomplete="off" />
+    <input type="password" id="userPass" placeholder="পাসওয়ার্ড" autocomplete="off" />
+    <button id="loginBtn">লগইন</button>
+    
+    <div id="contactLinks" style="display:none;">
+      তোমার নাম পাওয়া যায়নি? অনুমোদনের জন্য যোগাযোগ করো: 
+      <a href="https://m.me/kawser.ahmed.88690" target="_blank" rel="noopener noreferrer">Messenger</a> | 
+      <a href="https://wa.me/+8801750868119" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+    </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import {
-      getFirestore, doc, getDoc, setDoc, updateDoc
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-    // তোমার Firebase কনফিগারেশন
-    const firebaseConfig = {
-      apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
-      authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
-      projectId: "chat-with-admin-1ca1a",
-      storageBucket: "chat-with-admin-1ca1a.appspot.com",
-      messagingSenderId: "604406589995",
-      appId: "1:604406589995:web:8baddc0c5752386ffb586e"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
+    authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
+    projectId: "chat-with-admin-1ca1a",
+    storageBucket: "chat-with-admin-1ca1a.appspot.com",
+    messagingSenderId: "604406589995",
+    appId: "1:604406589995:web:8baddc0c5752386ffb586e"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const loginBtn = document.getElementById('loginBtn');
-    const errorMsg = document.getElementById('errorMsg');
+  const loginBtn = document.getElementById('loginBtn');
+  const errorMsg = document.getElementById('errorMsg');
+  const contactLinks = document.getElementById('contactLinks');
 
-    loginBtn.addEventListener('click', async () => {
-      errorMsg.textContent = '';
-      const userName = usernameInput.value.trim();
-      const pass = passwordInput.value.trim();
+  loginBtn.onclick = async () => {
+    errorMsg.textContent = '';
+    contactLinks.style.display = 'none';
 
-      if (!userName || !pass) {
-        errorMsg.textContent = 'নাম ও পাসওয়ার্ড অবশ্যই দিতে হবে।';
+    const name = document.getElementById('userName').value.trim();
+    const pass = document.getElementById('userPass').value.trim();
+
+    if (!name || !pass) {
+      errorMsg.textContent = 'দয়া করে নাম এবং পাসওয়ার্ড দুইটাই লেখো।';
+      return;
+    }
+
+    try {
+      // users collection এর ডকুমেন্ট যেখানে ডকুমেন্ট আইডি = name (তুমি চাইলে ইউজার আইডি আলাদা রাখতে পারো)
+      const userDocRef = doc(db, 'users', name);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        // যদি নাম না পাওয়া যায়, অনুমোদনের জন্য রিকোয়েস্ট যোগাও
+        await setDoc(userDocRef, {
+          name: name,
+          password: pass,
+          approved: false,
+          banned: false,
+          loginTime: null,
+          requestedAt: serverTimestamp()
+        });
+        errorMsg.textContent = 'তোমার নাম পাওয়া যায়নি। অনুমোদনের জন্য Messenger বা WhatsApp এ যোগাযোগ করো।';
+        contactLinks.style.display = 'block';
         return;
       }
 
-      try {
-        const userRef = doc(db, 'users', userName);
-        const userSnap = await getDoc(userRef);
+      const userData = userDocSnap.data();
 
-        if (userSnap.exists()) {
-          const userData = userSnap.data();
-
-          // পাসওয়ার্ড মিলছে কিনা চেক
-          if (userData.password !== pass) {
-            errorMsg.textContent = 'পাসওয়ার্ড ভুল হয়েছে।';
-            return;
-          }
-
-          // banned কি?
-          if (userData.banned) {
-            errorMsg.textContent = 'আপনার একাউন্ট নিষিদ্ধ হয়েছে। প্রশাসকের সাথে যোগাযোগ করুন।';
-            return;
-          }
-
-          // approved কিনা?
-          if (!userData.approved) {
-            errorMsg.innerHTML = `আপনার অনুমোদন হয়নি। অনুমোদনের জন্য Messenger বা WhatsApp এ যোগাযোগ করুন। <br/>
-              <a href="https://m.me/kawser.ahmed.88690" target="_blank">Messenger</a> | <a href="https://wa.me/+8801750868119" target="_blank">WhatsApp</a>`;
-            return;
-          }
-
-          // লগইন সফল হলে, লগইন টাইম আপডেট করো
-          await updateDoc(userRef, { loginTime: new Date().toLocaleString() });
-
-          // ইউজারের নাম localStorage-এ রাখো
-          localStorage.setItem('userName', userName);
-
-          // চ্যাট পেজে রিডাইরেক্ট করো
-          window.location.href = 'chat.html';
-
-        } else {
-          // নতুন ইউজার ডাটাবেজে যোগ করো (approved:false)
-          await setDoc(userRef, {
-            password: pass,
-            approved: false,
-            banned: false,
-            loginTime: new Date().toLocaleString()
-          });
-
-          errorMsg.innerHTML = `তোমার নাম পাওয়া যায়নি। অনুমোদনের জন্য Messenger বা WhatsApp এ যোগাযোগ করো। <br/>
-            <a href="https://m.me/kawser.ahmed.88690" target="_blank">Messenger</a> | <a href="https://wa.me/+8801750868119" target="_blank">WhatsApp</a>`;
-        }
-      } catch (error) {
-        console.error('Error logging in:', error);
-        errorMsg.textContent = 'চ্যাট অ্যাপে লগইন করার সময় সমস্যা হয়েছে, আবার চেষ্টা করুন।';
+      if (!userData.approved) {
+        errorMsg.textContent = 'তুমি এখনও অনুমোদিত না। Messenger বা WhatsApp এ যোগাযোগ করো।';
+        contactLinks.style.display = 'block';
+        return;
       }
-    });
-  </script>
+
+      if (userData.banned) {
+        errorMsg.textContent = 'দুঃখিত, তুমি নিষিদ্ধ হয়েছো।';
+        return;
+      }
+
+      if (userData.password !== pass) {
+        errorMsg.textContent = 'পাসওয়ার্ড ভুল। আবার চেষ্টা করো।';
+        return;
+      }
+
+      // সফল লগইন হলে লগইন টাইম আপডেট
+      await setDoc(userDocRef, {
+        loginTime: new Date().toLocaleString()
+      }, { merge: true });
+
+      // লোকালস্টোরেজে নাম রাখো
+      localStorage.setItem('fdUser', name);
+
+      // চ্যাট পেজে রিডাইরেক্ট
+      window.location.href = 'chat.html';
+
+    } catch (error) {
+      errorMsg.textContent = 'কিছু সমস্যা হয়েছে, আবার চেষ্টা করো।';
+      console.error(error);
+    }
+  };
+
+  // Enter চাপলেই লগইন হোক
+  document.getElementById('userPass').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') {
+      loginBtn.click();
+    }
+  });
+</script>
 
 </body>
 </html>

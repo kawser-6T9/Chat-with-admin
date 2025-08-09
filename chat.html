@@ -3,49 +3,47 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pakhi Chat</title>
+<title>Pakhi Chat - Modern Theme</title>
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
   body, html {
     margin: 0; padding: 0; height: 100%;
     font-family: 'Inter', sans-serif;
-    background: #f0f4f8 url('https://www.transparenttextures.com/patterns/cubes.png') repeat;
+    background: #f5f7fa;
     display: flex;
     flex-direction: column;
   }
   header {
-    background-color: #1e40af;
-    color: white;
-    padding: 15px 20px;
-    font-weight: 700;
+    background: #2d3748;
+    color: #f7fafc;
+    padding: 14px 20px;
     font-size: 22px;
+    font-weight: 700;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
-    z-index: 100;
-    user-select:none;
-    box-shadow: 0 2px 6px rgb(30 64 175 / 0.4);
+    z-index: 10;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
   }
   #userNameDisplay {
-    cursor: pointer;
     position: relative;
-    user-select:none;
+    cursor: pointer;
   }
   #logoutBtn {
-    position: absolute;
-    top: 40px;
-    right: 0;
-    background: #dc2626;
+    background: #e53e3e;
     border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
     color: white;
-    font-weight: 700;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 6px;
     font-size: 14px;
     cursor: pointer;
+    position: absolute;
+    top: 38px;
+    right: 0;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -59,20 +57,19 @@
   main {
     flex: 1;
     overflow-y: auto;
-    padding: 15px 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, #eef2f7, #d6dbdf);
     scroll-behavior: smooth;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
   }
 
   .message-wrapper {
+    max-width: 70%;
+    margin-bottom: 15px;
     display: flex;
-    max-width: 75%;
-    animation: slideIn 0.35s ease forwards;
-    position: relative;
+    align-items: flex-end;
+    animation: slideFadeIn 0.35s ease forwards;
   }
-  @keyframes slideIn {
+  @keyframes slideFadeIn {
     from {opacity: 0; transform: translateY(20px);}
     to {opacity: 1; transform: translateY(0);}
   }
@@ -86,112 +83,52 @@
   }
 
   .profile-circle {
-    width: 40px;
-    height: 40px;
+    width: 40px; height: 40px;
     border-radius: 50%;
-    background: #3b82f6;
+    background: #3182ce;
     color: white;
     font-weight: 700;
     font-size: 18px;
     line-height: 40px;
     text-align: center;
-    user-select:none;
+    user-select: none;
     flex-shrink: 0;
     margin: 0 12px;
+    box-shadow: 0 3px 8px rgb(49 130 206 / 0.4);
   }
 
   .message-box {
     background: white;
-    padding: 12px 16px;
-    border-radius: 16px;
-    font-size: 15px;
-    line-height: 1.4;
-    box-shadow: 0 4px 8px rgb(0 0 0 / 0.08);
-    cursor: pointer;
-    word-break: break-word;
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 16px;
+    line-height: 1.3;
     position: relative;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.05);
+    word-wrap: break-word;
+    color: #2d3748;
+    user-select: text;
+    max-width: 100%;
+    transition: background-color 0.3s ease;
   }
   .message-right .message-box {
-    background: #2563eb;
+    background: #2b6cb0;
     color: white;
-    box-shadow: 0 4px 12px rgb(37 99 235 / 0.7);
+    box-shadow: 0 3px 14px rgb(43 108 176 / 0.6);
   }
 
   .message-meta {
-    font-size: 12px;
+    font-size: 11px;
     margin-top: 6px;
-    user-select:none;
+    user-select: none;
   }
   .message-meta-left {
-    color: #475569;
+    color: #718096;
   }
   .message-meta-right {
-    color: #bfdbfe;
+    color: #a0aec0;
     text-align: right;
-  }
-
-  /* Popup menu */
-  .popup-menu {
-    position: absolute;
-    top: -42px;
-    right: 8px;
-    background: #2563eb;
-    color: white;
-    font-size: 14px;
-    border-radius: 10px;
-    padding: 5px 12px;
-    display: flex;
-    gap: 16px;
-    user-select:none;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-    z-index: 500;
-  }
-  .popup-menu.show {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .popup-menu button {
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: background-color 0.2s ease;
-  }
-  .popup-menu button:hover {
-    background-color: #1e40af;
-  }
-
-  #replyBar {
-    background: #2563eb;
-    color: white;
-    padding: 10px 20px;
-    font-size: 15px;
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    user-select:none;
-    border-radius: 0 0 16px 16px;
-    font-weight: 600;
-  }
-  #replyBar span {
-    max-width: 80%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  #replyBar button {
-    background: transparent;
-    border: none;
-    color: white;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 20px;
-    line-height: 20px;
   }
 
   #inputArea {
@@ -199,43 +136,42 @@
     padding: 14px 20px;
     background: white;
     align-items: center;
-    gap: 14px;
-    box-shadow: 0 -1px 8px rgb(0 0 0 / 0.1);
+    gap: 15px;
+    box-shadow: 0 -2px 12px rgb(0 0 0 / 0.08);
     position: sticky;
     bottom: 0;
-    z-index: 100;
+    z-index: 20;
   }
   #messageInput {
     flex: 1;
-    border: 1.8px solid #cbd5e1;
-    border-radius: 32px;
-    padding: 14px 24px;
+    border: 1.8px solid #cbd5e0;
+    border-radius: 30px;
+    padding: 12px 22px;
     font-size: 16px;
     outline: none;
     transition: border-color 0.3s ease;
-    resize: none;
-    max-height: 80px;
-    line-height: 1.4;
+    color: #2d3748;
   }
   #messageInput:focus {
-    border-color: #2563eb;
+    border-color: #3182ce;
   }
-
   #sendBtn {
-    background: #2563eb;
+    background: #3182ce;
     border: none;
     border-radius: 50%;
-    width: 48px;
-    height: 48px;
+    width: 46px;
+    height: 46px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 6px 10px rgb(37 99 235 / 0.5);
-    transition: background-color 0.3s ease;
+    box-shadow: 0 3px 14px rgb(49 130 206 / 0.6);
+    transition: background-color 0.25s ease;
   }
-  #sendBtn:hover {
-    background-color: #1e40af;
+  #sendBtn:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+    box-shadow: none;
   }
   #sendBtn svg {
     fill: white;
@@ -249,49 +185,80 @@
   #imageLabel {
     cursor: pointer;
     font-size: 26px;
-    color: #2563eb;
-    user-select:none;
-    transition: color 0.3s ease;
-  }
-  #imageLabel:hover {
-    color: #1e40af;
+    color: #3182ce;
+    user-select: none;
   }
 
-  /* Scrollbar */
-  main::-webkit-scrollbar {
-    width: 6px;
+  .popup-menu {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: #2b6cb0;
+    color: white;
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 6px 10px;
+    display: flex;
+    gap: 12px;
+    user-select: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 3px 8px rgb(43 108 176 / 0.7);
   }
-  main::-webkit-scrollbar-thumb {
-    background: #2563eb;
-    border-radius: 10px;
+  .popup-menu.show {
+    opacity: 1;
+    pointer-events: auto;
   }
-
-  /* Image in message */
-  .message-box img {
-    max-width: 260px;
-    border-radius: 12px;
-    margin-bottom: 8px;
+  .popup-menu button {
+    background: transparent;
+    border: none;
+    color: white;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
   }
-  .message-box img:hover {
-    transform: scale(1.05);
+  .popup-menu button:hover {
+    background-color: #1e40af;
   }
 
-  /* Deleted message style */
-  .deleted-message {
-    font-style: italic;
-    color: #9ca3af !important;
-    user-select:none;
+  #replyBar {
+    background: #2b6cb0;
+    color: white;
+    padding: 10px 18px;
+    font-size: 14px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    border-radius: 0 0 18px 18px;
   }
+  #replyBar span {
+    font-weight: 600;
+    max-width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #replyBar button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+  }
+
 </style>
-
 </head>
 <body>
 
 <header>
-  <div id="userNameDisplay" title="Click to logout">Loading...</div>
-  <button id="logoutBtn">লগআউট</button>
+  <div id="userNameDisplay"></div>
 </header>
 
 <main id="chatArea"></main>
@@ -304,8 +271,8 @@
 <div id="inputArea">
   <label for="imageUpload" id="imageLabel" title="ছবি পাঠাও 📷">📷</label>
   <input type="file" accept="image/*" id="imageUpload" />
-  <textarea id="messageInput" placeholder="বার্তা লিখুন..." rows="1" autocomplete="off"></textarea>
-  <button id="sendBtn" title="পাঠাও">
+  <input type="text" id="messageInput" placeholder="বার্তা লিখুন..." autocomplete="off" />
+  <button id="sendBtn" title="পাঠাও" disabled>
     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
   </button>
 </div>
@@ -320,6 +287,7 @@
     getStorage, ref, uploadBytes, getDownloadURL
   } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
 
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
     authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
@@ -333,8 +301,21 @@
   const db = getFirestore(app);
   const storage = getStorage(app);
 
+  const currentUser = localStorage.getItem('fdUser') || 'Unknown User';
   const userNameDisplay = document.getElementById('userNameDisplay');
-  const logoutBtn = document.getElementById('logoutBtn');
+  userNameDisplay.textContent = currentUser;
+
+  // Logout button
+  const logoutBtn = document.createElement('button');
+  logoutBtn.id = 'logoutBtn';
+  logoutBtn.textContent = 'লগআউট';
+  userNameDisplay.appendChild(logoutBtn);
+
+  logoutBtn.onclick = () => {
+    localStorage.removeItem('fdUser');
+    location.href = 'index.html';
+  };
+
   const chatArea = document.getElementById('chatArea');
   const messageInput = document.getElementById('messageInput');
   const sendBtn = document.getElementById('sendBtn');
@@ -343,21 +324,25 @@
   const replyText = document.getElementById('replyText');
   const cancelReplyBtn = document.getElementById('cancelReplyBtn');
 
-  let currentUser = localStorage.getItem('fdUser') || null;
-  if(!currentUser) {
-    alert('তোমার নাম পাওয়া যায়নি, লগইন করে আসো।');
-    window.location.href = 'index.html'; // তোমার লগইন পেজের URL দিন
-  }
-  userNameDisplay.textContent = currentUser;
-
-  logoutBtn.onclick = () => {
-    localStorage.removeItem('fdUser');
-    window.location.href = 'index.html'; // লগইন পেজ
-  };
-
-  // Reply tracking
   let replyToMessage = null;
+  let imageFile = null;
+  let sendCooldown = false;
 
+  // Enable send button only if input or image selected
+  function updateSendBtnState() {
+    sendBtn.disabled = !(messageInput.value.trim() || imageFile);
+  }
+  messageInput.addEventListener('input', updateSendBtnState);
+  imageUpload.addEventListener('change', (e) => {
+    if (e.target.files.length) {
+      imageFile = e.target.files[0];
+    } else {
+      imageFile = null;
+    }
+    updateSendBtnState();
+  });
+
+  // Reply bar handlers
   function showReplyBar(text) {
     replyText.textContent = 'Replying to: ' + text;
     replyBar.style.display = 'flex';
@@ -368,22 +353,21 @@
   }
   cancelReplyBtn.onclick = hideReplyBar;
 
-  // Format time as hh:mm AM/PM
-  function formatTime(timestamp) {
-    if (!timestamp) return '';
-    const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+  // Format time
+  function formatTime(ts) {
+    if (!ts) return '';
+    let d = ts.toDate ? ts.toDate() : new Date(ts);
     return d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
   }
 
   // Create message element
   function createMessageElement(msg) {
     const isCurrentUser = msg.sender === currentUser;
-
     const wrapper = document.createElement('div');
     wrapper.classList.add('message-wrapper', isCurrentUser ? 'message-right' : 'message-left');
     wrapper.dataset.id = msg.id;
 
-    // Profile circle with first letter
+    // Profile circle
     const profileCircle = document.createElement('div');
     profileCircle.className = 'profile-circle';
     profileCircle.textContent = msg.sender.charAt(0).toUpperCase();
@@ -395,100 +379,100 @@
     // Deleted message
     if (msg.deleted) {
       msgBox.textContent = 'This message was deleted';
-      msgBox.classList.add('deleted-message');
+      msgBox.style.fontStyle = 'italic';
+      msgBox.style.color = isCurrentUser ? 'rgba(255 255 255 / 0.7)' : '#555';
     } else {
-      // Show reply snippet if any
+      // Reply snippet
       if (msg.replyToText) {
         const replyDiv = document.createElement('div');
         replyDiv.style.fontSize = '13px';
-        replyDiv.style.background = isCurrentUser ? 'rgba(255 255 255 / 0.15)' : '#e2e8f0';
-        replyDiv.style.color = isCurrentUser ? '#ddd' : '#555';
-        replyDiv.style.borderLeft = '3px solid ' + (isCurrentUser ? '#60a5fa' : '#2563eb');
-        replyDiv.style.padding = '4px 10px';
         replyDiv.style.marginBottom = '6px';
-        replyDiv.textContent = msg.replyToText;
+        replyDiv.style.paddingLeft = '10px';
+        replyDiv.style.borderLeft = '3px solid ' + (isCurrentUser ? '#90cdf4' : '#3182ce');
+        replyDiv.style.color = isCurrentUser ? '#bee3f8' : '#3182ce';
+        replyDiv.textContent = msg.replyToText.length > 40 ? msg.replyToText.slice(0, 40) + '...' : msg.replyToText;
         msgBox.appendChild(replyDiv);
       }
 
-      // If image exists
+      // Show text or image
       if (msg.imageUrl) {
         const img = document.createElement('img');
         img.src = msg.imageUrl;
-        img.alt = 'Image';
+        img.style.maxWidth = '100%';
+        img.style.borderRadius = '12px';
+        img.style.cursor = 'pointer';
+        img.alt = "Image";
         msgBox.appendChild(img);
       }
-
-      // Text message
       if (msg.text) {
-        const textNode = document.createTextNode(msg.text);
-        msgBox.appendChild(textNode);
+        const p = document.createElement('p');
+        p.textContent = msg.text;
+        p.style.margin = '0';
+        msgBox.appendChild(p);
       }
     }
 
-    // Meta info (name + time)
+    // Meta info (sender name + time)
     const meta = document.createElement('div');
-    meta.className = 'message-meta ' + (isCurrentUser ? 'message-meta-right' : 'message-meta-left');
-    meta.textContent = `${msg.sender} • ${formatTime(msg.createdAt)}`;
+    meta.classList.add('message-meta', isCurrentUser ? 'message-meta-right' : 'message-meta-left');
+    meta.textContent = msg.sender + ' • ' + formatTime(msg.createdAt);
+    msgBox.appendChild(meta);
 
     wrapper.appendChild(profileCircle);
     wrapper.appendChild(msgBox);
-    wrapper.appendChild(meta);
 
-    // Popup menu (reply/delete)
+    // Popup menu for reply/delete
     const popup = document.createElement('div');
     popup.className = 'popup-menu';
-    popup.innerHTML = `
-      <button class="replyBtn">Reply</button>
-      ${isCurrentUser ? '<button class="deleteBtn">Delete</button>' : ''}
-    `;
-    wrapper.appendChild(popup);
 
-    // Show popup menu on msg click
-    msgBox.onclick = (e) => {
-      e.stopPropagation();
-      // Hide any other open popups
-      document.querySelectorAll('.popup-menu.show').forEach(p => {
-        if (p !== popup) p.classList.remove('show');
-      });
-      popup.classList.toggle('show');
-    };
+    const replyBtn = document.createElement('button');
+    replyBtn.textContent = 'Reply';
+    popup.appendChild(replyBtn);
 
-    // Hide popup when clicking outside
-    document.body.onclick = () => {
-      popup.classList.remove('show');
-    };
-
-    // Reply button handler
-    popup.querySelector('.replyBtn').onclick = (e) => {
-      e.stopPropagation();
-      showReplyBar(msg.text || (msg.imageUrl ? "Image" : ""));
-      replyToMessage = msg;
-      popup.classList.remove('show');
-      messageInput.focus();
-    };
-
-    // Delete button handler (only current user's messages)
     if (isCurrentUser) {
-      popup.querySelector('.deleteBtn').onclick = async (e) => {
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Delete';
+      popup.appendChild(deleteBtn);
+      deleteBtn.onclick = async (e) => {
         e.stopPropagation();
         if (confirm('আপনি কি এই মেসেজটি ডিলিট করতে চান?')) {
           try {
-            const messageDoc = doc(db, 'messages', msg.id);
-            // Update message as deleted
-            await updateDoc(messageDoc, {
+            await updateDoc(doc(db, 'messages', msg.id), {
               deleted: true,
               text: '',
               imageUrl: '',
               replyToText: ''
             });
           } catch (error) {
-            alert('মেসেজ ডিলিট করতে সমস্যা হয়েছে!');
-            console.error(error);
-          }
+            // message delete error handling
+          alert('মেসেজ ডিলেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+          console.error(error);
         }
-        popup.classList.remove('show');
       };
     }
+
+    replyBtn.onclick = (e) => {
+      e.stopPropagation();
+      replyToMessage = msg;
+      showReplyBar(msg.text || (msg.imageUrl ? 'Image' : ''));
+    };
+
+    wrapper.appendChild(popup);
+
+    // Show/hide popup on message box click
+    msgBox.onclick = (e) => {
+      e.stopPropagation();
+      // Hide all other popups first
+      document.querySelectorAll('.popup-menu').forEach(menu => {
+        if(menu !== popup) menu.classList.remove('show');
+      });
+      popup.classList.toggle('show');
+    };
+
+    // Click outside popup closes all popups
+    document.body.addEventListener('click', () => {
+      popup.classList.remove('show');
+    });
 
     return wrapper;
   }
@@ -498,38 +482,41 @@
     chatArea.scrollTop = chatArea.scrollHeight;
   }
 
-  // Real-time listener for messages
+  // Load messages from Firestore and listen realtime
   const messagesCol = collection(db, 'messages');
-  const q = query(messagesCol, orderBy('createdAt'));
+  const q = query(messagesCol, orderBy('createdAt', 'asc'));
 
   onSnapshot(q, (snapshot) => {
     chatArea.innerHTML = '';
     snapshot.forEach(docSnap => {
-      const msg = { id: docSnap.id, ...docSnap.data() };
-      const messageEl = createMessageElement(msg);
-      chatArea.appendChild(messageEl);
+      const msgData = docSnap.data();
+      msgData.id = docSnap.id;
+      const msgElem = createMessageElement(msgData);
+      chatArea.appendChild(msgElem);
     });
     scrollToBottom();
   });
 
   // Send message function
   async function sendMessage() {
+    if(sendCooldown) return;
     const text = messageInput.value.trim();
-    if (!text && !imageFile) return;
+    if(!text && !imageFile) return;
 
-    let imageUrl = null;
+    sendBtn.disabled = true;
+    sendCooldown = true;
 
-    // Upload image if selected
-    if (imageFile) {
-      const imageRef = ref(storage, `chatImages/${Date.now()}_${imageFile.name}`);
+    let imageUrl = '';
+    if(imageFile) {
+      const storageRef = ref(storage, `chatImages/${Date.now()}_${imageFile.name}`);
       try {
-        const snapshot = await uploadBytes(imageRef, imageFile);
-        imageUrl = await getDownloadURL(snapshot.ref);
+        await uploadBytes(storageRef, imageFile);
+        imageUrl = await getDownloadURL(storageRef);
       } catch (error) {
-        alert('ছবি আপলোড করতে সমস্যা হয়েছে!');
+        alert('ছবি আপলোডে সমস্যা হয়েছে।');
         console.error(error);
-        imageFile = null;
-        imageUpload.value = '';
+        sendBtn.disabled = false;
+        sendCooldown = false;
         return;
       }
     }
@@ -537,44 +524,38 @@
     try {
       await addDoc(messagesCol, {
         sender: currentUser,
-        text: text || '',
-        imageUrl: imageUrl || '',
+        text: text,
+        imageUrl: imageUrl,
         createdAt: serverTimestamp(),
-        replyToText: replyToMessage ? replyToMessage.text || (replyToMessage.imageUrl ? 'Image' : '') : ''
+        replyToText: replyToMessage ? replyToMessage.text || (replyToMessage.imageUrl ? 'Image' : '') : '',
+        deleted: false,
       });
     } catch (error) {
-      alert('মেসেজ পাঠাতে সমস্যা হয়েছে!');
+      alert('মেসেজ পাঠাতে সমস্যা হয়েছে।');
       console.error(error);
     }
 
-    // Reset inputs and reply
     messageInput.value = '';
     imageUpload.value = '';
     imageFile = null;
     hideReplyBar();
-    messageInput.focus();
+    updateSendBtnState();
+
+    setTimeout(() => {
+      sendBtn.disabled = false;
+      sendCooldown = false;
+    }, 1000);
   }
 
   sendBtn.onclick = sendMessage;
 
-  // Support enter key to send message (shift+enter for new line)
   messageInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if(e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   });
-
-  // Image upload handling
-  let imageFile = null;
-  imageUpload.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) {
-      imageFile = e.target.files[0];
-      // Optionally show a preview or just focus input
-      messageInput.focus();
-    }
-  });
-
 </script>
+
 </body>
 </html>

@@ -4,511 +4,539 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Pakhi Chat</title>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-
   body, html {
     margin:0; padding:0; height:100%;
     font-family: 'Roboto', sans-serif;
-    background: #e0e7ff url('https://www.transparenttextures.com/patterns/geometry2.png') repeat;
+    background: #e2e8f0 url('https://www.transparenttextures.com/patterns/cubes.png') repeat;
     display: flex;
     flex-direction: column;
   }
   header {
-    background: #4f46e5;
-    color: white;
-    padding: 12px 20px;
+    background:#2563eb;
+    color:white;
+    padding: 15px 20px;
     font-weight: 700;
-    font-size: 20px;
+    font-size: 22px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    user-select:none;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  #userNameDisplay {
+    cursor: pointer;
     position: relative;
   }
-  #usernameDisplay {
-    cursor: pointer;
-    user-select:none;
-  }
   #logoutBtn {
-    position: absolute;
-    top: 50px;
-    right: 20px;
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
-    cursor: pointer;
+    background: #f87171;
+    border:none;
+    color:white;
     font-weight: 700;
-    display: none;
-    box-shadow: 0 0 8px rgba(239,68,68,0.8);
-    transition: all 0.3s ease;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    display:none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
-  #logoutBtn.show {
+  #userNameDisplay:hover #logoutBtn {
     display: block;
-    animation: fadeInDown 0.4s ease forwards;
+    opacity: 1;
   }
-  @keyframes fadeInDown {
-    from {opacity:0; transform: translateY(-20px);}
+
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px 20px;
+    scroll-behavior: smooth;
+  }
+
+  .message-wrapper {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-end;
+    max-width: 80%;
+    position: relative;
+    animation: fadeIn 0.4s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from {opacity:0; transform: translateY(15px);}
     to {opacity:1; transform: translateY(0);}
   }
 
-  #chatContainer {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    max-width: 700px;
-    margin: 0 auto;
-    width: 100%;
+  .message-left {
+    flex-direction: row;
   }
-  #messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px 15px;
-    scroll-behavior: smooth;
-  }
-  .message {
-    max-width: 75%;
-    margin-bottom: 12px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    position: relative;
-    word-wrap: break-word;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
-    animation: fadeIn 0.5s ease;
-  }
-  .msg-self {
-    background: #6366f1;
-    color: white;
+  .message-right {
+    flex-direction: row-reverse;
     margin-left: auto;
-    border-bottom-right-radius: 2px;
   }
-  .msg-other {
-    background: #f3f4f6;
-    color: #1f2937;
-    margin-right: auto;
-    border-bottom-left-radius: 2px;
-  }
-  @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(10px);}
-    to {opacity: 1; transform: translateY(0);}
-  }
-  .msg-header {
-    font-weight: 700;
-    font-size: 14px;
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-  }
-  .profile-letter {
-    width: 28px;
-    height: 28px;
+
+  .profile-circle {
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background-color: #7c3aed;
+    background: #2563eb;
     color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 8px;
     font-weight: 700;
-    text-transform: uppercase;
+    font-size: 18px;
+    line-height: 36px;
+    text-align: center;
     user-select:none;
-  }
-  .msg-content {
-    white-space: pre-wrap;
-    font-size: 16px;
-    line-height: 1.3;
-  }
-  .msg-time {
-    font-size: 11px;
-    color: #6b7280;
-    margin-top: 6px;
-    text-align: right;
-    user-select:none;
-  }
-  .msg-image {
-    max-width: 100%;
-    border-radius: 12px;
-    margin-top: 8px;
-    cursor: pointer;
-    box-shadow: 0 1px 4px rgb(0 0 0 / 0.1);
-    transition: transform 0.2s ease;
-  }
-  .msg-image:hover {
-    transform: scale(1.05);
+    margin: 0 10px;
+    flex-shrink: 0;
   }
 
-  /* Reply bar above input */
-  #replyBar {
-    background: #eef2ff;
-    padding: 6px 12px;
-    font-size: 14px;
-    color: #3730a3;
-    border-left: 4px solid #4f46e5;
-    margin: 0 20px 5px 20px;
-    display: none;
-    user-select:none;
-  }
-
-  /* Input container */
-  #inputContainer {
-    padding: 10px 20px;
+  .message-box {
     background: white;
-    box-shadow: 0 -2px 6px rgb(0 0 0 / 0.1);
-    display: flex;
-    align-items: center;
-  }
-  #messageInput {
-    flex: 1;
-    padding: 10px 14px;
-    font-size: 16px;
-    border: 1.8px solid #ddd;
-    border-radius: 24px;
-    outline: none;
-    resize: none;
-    max-height: 100px;
-  }
-  #sendBtn, #imageBtn {
-    background: #4f46e5;
-    border: none;
-    color: white;
-    margin-left: 10px;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    line-height: 1.3;
+    position: relative;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(79,70,229,0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    max-width: 320px;
+    word-wrap: break-word;
   }
-  #sendBtn:hover, #imageBtn:hover {
-    background: #4338ca;
-  }
-  #sendBtn:disabled {
-    background: #a5b4fc;
-    cursor: not-allowed;
-  }
-  #imageInput {
-    display: none;
+  .message-right .message-box {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.6);
   }
 
-  /* Popup menu for message */
-  .msg-popup {
+  .message-meta {
+    font-size: 11px;
+    margin-top: 4px;
+    user-select:none;
+  }
+  .message-meta-left {
+    color: #475569;
+  }
+  .message-meta-right {
+    color: #a5b4fc;
+    text-align: right;
+  }
+
+  .popup-menu {
     position: absolute;
     top: -38px;
     right: 0;
-    background: #4f46e5;
+    background: #2563eb;
     color: white;
-    padding: 5px 10px;
-    border-radius: 12px;
-    font-size: 13px;
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 4px 8px;
     display: flex;
-    gap: 10px;
+    gap: 12px;
     user-select:none;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.25s ease;
+    z-index: 100;
   }
-  .msg-popup.show {
+  .popup-menu.show {
     opacity: 1;
     pointer-events: auto;
   }
-  .msg-popup button {
+  .popup-menu button {
     background: transparent;
     border: none;
     color: white;
     cursor: pointer;
     font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
   }
-  .msg-popup button:hover {
-    text-decoration: underline;
+  .popup-menu button:hover {
+    background-color: #1e40af;
+  }
+
+  #replyBar {
+    background: #2563eb;
+    color: white;
+    padding: 8px 15px;
+    font-size: 14px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    user-select:none;
+    border-radius: 0 0 12px 12px;
+  }
+  #replyBar span {
+    font-weight: 600;
+    max-width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #replyBar button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  #inputArea {
+    display: flex;
+    padding: 12px 15px;
+    background: white;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 -1px 6px rgba(0,0,0,0.1);
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+  #messageInput {
+    flex: 1;
+    border: 1.5px solid #ccc;
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  #messageInput:focus {
+    border-color: #2563eb;
+  }
+  #sendBtn {
+    background: #2563eb;
+    border: none;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #sendBtn svg {
+    fill: white;
+    width: 24px;
+    height: 24px;
+  }
+  #imageUpload {
+    display: none;
+  }
+  #imageLabel {
+    cursor: pointer;
+    font-size: 22px;
+    color: #2563eb;
+    user-select:none;
+  }
+
+  /* Scrollbar */
+  main::-webkit-scrollbar {
+    width: 6px;
+  }
+  main::-webkit-scrollbar-thumb {
+    background: #2563eb;
+    border-radius: 10px;
   }
 </style>
+
 </head>
 <body>
 
 <header>
-  Pakhi Chat
-  <div id="usernameDisplay" title="Click to logout"></div>
-  <button id="logoutBtn">Logout</button>
+  <div id="userNameDisplay"></div>
 </header>
 
-<div id="chatContainer">
-  <div id="messages"></div>
+<main id="chatArea"></main>
 
-  <div id="replyBar"></div>
+<div id="replyBar">
+  <span id="replyText"></span>
+  <button id="cancelReplyBtn" title="Cancel reply">×</button>
+</div>
 
-  <div id="inputContainer">
-    <textarea id="messageInput" rows="1" placeholder="Type your message..."></textarea>
-    <label for="imageInput" title="Send Image" id="imageBtn" aria-label="Send Image" role="button">
-      📷
-    </label>
-    <input type="file" accept="image/*" id="imageInput" />
-    <button id="sendBtn" disabled title="Send message">➡️</button>
-  </div>
+<div id="inputArea">
+  <label for="imageUpload" id="imageLabel" title="ছবি পাঠাও 📷">📷</label>
+  <input type="file" accept="image/*" id="imageUpload" />
+  <input type="text" id="messageInput" placeholder="বার্তা লিখুন..." autocomplete="off" />
+  <button id="sendBtn" title="পাঠাও">
+    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+  </button>
 </div>
 
 <script type="module">
-// Firebase imports from CDN
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+  import {
+    getFirestore, collection, query, orderBy, onSnapshot,
+    addDoc, serverTimestamp, doc, updateDoc, deleteDoc
+  } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+  import {
+    getStorage, ref, uploadBytes, getDownloadURL
+  } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
 
-// Your Firebase config here:
-const firebaseConfig = {
-  apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
-  authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
-  projectId: "chat-with-admin-1ca1a",
-  storageBucket: "chat-with-admin-1ca1a.firebasestorage.app",
-  messagingSenderId: "604406589995",
-  appId: "1:604406589995:web:8baddc0c5752386ffb586e"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// ==== USER LOGIN CHECK & SETUP ====
-let currentUser = sessionStorage.getItem('chatUser');
-if (!currentUser) {
-  currentUser = prompt("তোমার নাম লিখে 'OK' ক্লিক করো।");
-  if (!currentUser || !currentUser.trim()) {
-    alert("নাম দেওয়া বাধ্যতামূলক!");
-    location.reload();
-  } else {
-    currentUser = currentUser.trim();
-    sessionStorage.setItem('chatUser', currentUser);
-  }
-}
-const usernameDisplay = document.getElementById('usernameDisplay');
-const logoutBtn = document.getElementById('logoutBtn');
-usernameDisplay.textContent = currentUser.charAt(0).toUpperCase() + currentUser.slice(1);
-
-usernameDisplay.onclick = () => {
-  if (logoutBtn.classList.contains('show')) {
-    logoutBtn.classList.remove('show');
-  } else {
-    logoutBtn.classList.add('show');
-    setTimeout(() => {
-      logoutBtn.classList.remove('show');
-    }, 4000);
-  }
-};
-logoutBtn.onclick = () => {
-  sessionStorage.removeItem('chatUser');
-  location.reload();
-};
-
-// ==== CHAT UI ELEMENTS ====
-const messagesDiv = document.getElementById('messages');
-const messageInput = document.getElementById('messageInput');
-const sendBtn = document.getElementById('sendBtn');
-const imageInput = document.getElementById('imageInput');
-const replyBar = document.getElementById('replyBar');
-
-let replyTo = null; // message id we are replying to
-
-// Enable/disable send button based on input
-messageInput.addEventListener('input', () => {
-  sendBtn.disabled = messageInput.value.trim() === "" && !imageInput.files.length;
-});
-
-// ==== SEND MESSAGE FUNCTION ====
-async function sendMessage(imageBase64 = null) {
-  const text = messageInput.value.trim();
-  if (!text && !imageBase64) return;
-
-  const newMsg = {
-    sender: currentUser,
-    message: text || "",
-    image: imageBase64 || null,
-    time: new Date().toLocaleString('bn-BD', { hour12: true }),
-    replyTo: replyTo,
-    deleted: false,
-  };
-  try {
-    await addDoc(collection(db, "messages"), newMsg);
-    messageInput.value = "";
-    imageInput.value = "";
-    replyTo = null;
-    replyBar.style.display = "none";
-    sendBtn.disabled = true;
-    scrollToBottom();
-  } catch (err) {
-    alert("মেসেজ পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
-    console.error(err);
-  }
-}
-
-// ==== IMAGE UPLOAD HANDLER ====
-imageInput.addEventListener('change', () => {
-  if (imageInput.files.length > 0) {
-    sendBtn.disabled = false;
-  }
-});
-
-// ==== SEND BUTTON CLICK ====
-sendBtn.onclick = async () => {
-  if (imageInput.files.length > 0) {
-    const file = imageInput.files[0];
-    const reader = new FileReader();
-    reader.onload = async function (e) {
-      const base64 = e.target.result;
-      await sendMessage(base64);
-    };
-    reader.readAsDataURL(file);
-  } else {
-    await sendMessage();
-  }
-};
-
-// ==== LOAD AND RENDER MESSAGES ====
-const q = query(collection(db, "messages"), orderBy("time"));
-onSnapshot(q, (snapshot) => {
-  messagesDiv.innerHTML = "";
-  snapshot.forEach(docSnap => {
-    const msg = docSnap.data();
-    const id = docSnap.id;
-    renderMessage(msg, id);
-  });
-  scrollToBottom();
-});
-
-// ==== RENDER MESSAGE FUNCTION ====
-function renderMessage(msg, id) {
-  const isSelf = msg.sender === currentUser;
-  const msgDiv = document.createElement('div');
-  msgDiv.classList.add('message', isSelf ? 'msg-self' : 'msg-other');
-
-  // header with profile letter + name
-  const headerDiv = document.createElement('div');
-  headerDiv.className = 'msg-header';
-
-  const profileLetter = document.createElement('div');
-  profileLetter.className = 'profile-letter';
-  profileLetter.textContent = msg.sender.charAt(0).toUpperCase();
-
-  const nameSpan = document.createElement('span');
-  nameSpan.textContent = msg.sender;
-
-  headerDiv.appendChild(profileLetter);
-  headerDiv.appendChild(nameSpan);
-
-  // message content
-  const contentDiv = document.createElement('div');
-  contentDiv.className = 'msg-content';
-  if (msg.deleted) {
-    contentDiv.textContent = "This message was deleted";
-    contentDiv.style.fontStyle = "italic";
-    contentDiv.style.color = "#6b7280";
-  } else if (msg.image) {
-    const imgEl = document.createElement('img');
-    imgEl.src = msg.image;
-    imgEl.alt = "image";
-    imgEl.className = "msg-image";
-    contentDiv.appendChild(imgEl);
-    if (msg.message) {
-      const textNode = document.createTextNode('\n' + msg.message);
-      contentDiv.appendChild(textNode);
-    }
-  } else {
-    contentDiv.textContent = msg.message;
-  }
-
-  // time
-  const timeDiv = document.createElement('div');
-  timeDiv.className = 'msg-time';
-  timeDiv.textContent = msg.time;
-
-  msgDiv.appendChild(headerDiv);
-
-  // reply indicator
-  if (msg.replyTo) {
-    const replySpan = document.createElement('div');
-    replySpan.style.background = isSelf ? '#4338ca' : '#e0e7ff';
-    replySpan.style.color = isSelf ? 'white' : '#4f46e5';
-    replySpan.style.padding = "4px 10px";
-    replySpan.style.borderRadius = "12px";
-    replySpan.style.fontSize = "13px";
-    replySpan.style.marginBottom = "6px";
-    replySpan.style.maxWidth = "90%";
-    replySpan.style.whiteSpace = "nowrap";
-    replySpan.style.overflow = "hidden";
-    replySpan.style.textOverflow = "ellipsis";
-
-    // Find original replied message text from snapshot?
-    // For simplicity, show "Replying to message"
-    replySpan.textContent = "↪️ Replying to message";
-    msgDiv.insertBefore(replySpan, contentDiv);
-  }
-
-  msgDiv.appendChild(contentDiv);
-  msgDiv.appendChild(timeDiv);
-
-  // popup menu for reply/delete
-  const popupMenu = document.createElement('div');
-  popupMenu.className = 'msg-popup';
-  popupMenu.innerHTML = `
-    <button class="replyBtn">Reply</button>
-    ${isSelf ? '<button class="deleteBtn">Delete</button>' : ''}
-  `;
-  msgDiv.appendChild(popupMenu);
-
-  // show popup on message click (toggle)
-  msgDiv.addEventListener('click', (e) => {
-    e.stopPropagation();
-    document.querySelectorAll('.msg-popup').forEach(el => el.classList.remove('show'));
-    popupMenu.classList.toggle('show');
-  });
-
-  // reply button click
-  popupMenu.querySelector('.replyBtn').onclick = (e) => {
-    e.stopPropagation();
-    replyTo = id;
-    replyBar.style.display = "block";
-    replyBar.textContent = `Replying to ${msg.sender}: ${msg.message.substring(0, 40)}${msg.message.length > 40 ? '...' : ''}`;
-    messageInput.focus();
-    popupMenu.classList.remove('show');
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
+    authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
+    projectId: "chat-with-admin-1ca1a",
+    storageBucket: "chat-with-admin-1ca1a.appspot.com",
+    messagingSenderId: "604406589995",
+    appId: "1:604406589995:web:8baddc0c5752386ffb586e"
   };
 
-  // delete button click
-  if (isSelf) {
-    popupMenu.querySelector('.deleteBtn').onclick = async (e) => {
-      e.stopPropagation();
-      if (confirm("Are you sure you want to delete this message?")) {
-        try {
-          await updateDoc(doc(db, "messages", id), { deleted: true, message: "" });
-        } catch (error) {
-          alert("Delete failed.");
-          console.error(error);
-        }
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  // Get current user from localStorage
+  const currentUser = localStorage.getItem('fdUser') || 'Unknown User';
+
+  // Show username in header with logout button
+  const userNameDisplay = document.getElementById('userNameDisplay');
+  userNameDisplay.textContent = currentUser;
+
+  // Logout button (hover on username)
+  const logoutBtn = document.createElement('button');
+  logoutBtn.id = 'logoutBtn';
+  logoutBtn.textContent = 'লগআউট';
+  userNameDisplay.appendChild(logoutBtn);
+
+  logoutBtn.onclick = () => {
+    localStorage.removeItem('fdUser');
+    window.location.href = 'index.html';
+  };
+
+  // Chat UI elements
+  const chatArea = document.getElementById('chatArea');
+  const messageInput = document.getElementById('messageInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const imageUpload = document.getElementById('imageUpload');
+  const replyBar = document.getElementById('replyBar');
+  const replyText = document.getElementById('replyText');
+  const cancelReplyBtn = document.getElementById('cancelReplyBtn');
+
+  let replyToMessage = null; // For reply tracking
+
+  // Show reply bar if replying
+  function showReplyBar(text) {
+    replyText.textContent = 'Replying to: ' + text;
+    replyBar.style.display = 'flex';
+  }
+  function hideReplyBar() {
+    replyToMessage = null;
+    replyBar.style.display = 'none';
+  }
+  cancelReplyBtn.onclick = hideReplyBar;
+
+  // Format date/time nicely
+  function formatTime(timestamp) {
+    if (!timestamp) return '';
+    const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  }
+
+  // Create message element
+  function createMessageElement(msg) {
+    const isCurrentUser = msg.sender === currentUser;
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('message-wrapper', isCurrentUser ? 'message-right' : 'message-left');
+    wrapper.dataset.id = msg.id;
+
+    // Profile circle with first letter
+    const profileCircle = document.createElement('div');
+    profileCircle.className = 'profile-circle';
+    profileCircle.textContent = msg.sender.charAt(0).toUpperCase();
+
+    // Message box
+    const msgBox = document.createElement('div');
+    msgBox.className = 'message-box';
+
+    // If deleted
+    if (msg.deleted) {
+      msgBox.textContent = 'This message was deleted';
+      msgBox.style.fontStyle = 'italic';
+      msgBox.style.color = isCurrentUser ? 'rgba(255 255 255 / 0.7)' : '#555';
+    } else {
+      // Show reply text if any
+      if (msg.replyToText) {
+        const replyDiv = document.createElement('div');
+        replyDiv.style.fontSize = '13px';
+        replyDiv.style.background = isCurrentUser ? 'rgba(255 255 255 / 0.15)' : '#e2e8f0';
+        replyDiv.style.color = isCurrentUser ? '#ddd' : '#555';
+        replyDiv.style.borderLeft = '3px solid ' + (isCurrentUser ? '#60a5fa' : '#2563eb');
+        replyDiv.style.padding = '3px 8px';
+        replyDiv.style.marginBottom = '4px';
+        replyDiv.textContent = msg.replyToText;
+        msgBox.appendChild(replyDiv);
       }
-      popupMenu.classList.remove('show');
+
+      // If message contains image
+      if (msg.imageUrl) {
+        const img = document.createElement('img');
+        img.src = msg.imageUrl;
+        img.alt = 'Image';
+        img.style.maxWidth = '250px';
+        img.style.borderRadius = '12px';
+        img.style.display = 'block';
+        img.style.marginBottom = '5px';
+        msgBox.appendChild(img);
+      }
+
+      // Add text message
+      if(msg.text) {
+        const textNode = document.createTextNode(msg.text);
+        msgBox.appendChild(textNode);
+      }
+    }
+
+    // Meta info: sender name and time
+    const meta = document.createElement('div');
+    meta.className = 'message-meta ' + (isCurrentUser ? 'message-meta-right' : 'message-meta-left');
+    meta.textContent = `${msg.sender} • ${formatTime(msg.createdAt)}`;
+
+    wrapper.appendChild(profileCircle);
+    wrapper.appendChild(msgBox);
+    wrapper.appendChild(meta);
+
+    // Popup menu for reply and delete
+    const popup = document.createElement('div');
+    popup.className = 'popup-menu';
+    popup.innerHTML = `
+      <button class="replyBtn">Reply</button>
+      ${isCurrentUser ? '<button class="deleteBtn">Delete</button>' : ''}
+    `;
+    wrapper.appendChild(popup);
+
+    // Show popup menu on message click
+    msgBox.onclick = (e) => {
+      e.stopPropagation();
+      // Close all other popups first
+      document.querySelectorAll('.popup-menu.show').forEach(p => p.classList.remove('show'));
+      popup.classList.toggle('show');
     };
+
+    // Hide popup if click outside
+    document.body.onclick = () => {
+      document.querySelectorAll('.popup-menu.show').forEach(p => p.classList.remove('show'));
+    };
+
+    // Reply button action
+    popup.querySelector('.replyBtn').onclick = (e) => {
+      e.stopPropagation();
+      showReplyBar(msg.text || '[Image]');
+      replyToMessage = msg;
+      popup.classList.remove('show');
+      messageInput.focus();
+    };
+
+    // Delete button action (only current user's messages)
+    if(isCurrentUser) {
+      popup.querySelector('.deleteBtn').onclick = async (e) => {
+        e.stopPropagation();
+        try {
+          await updateDoc(doc(db, "messages", msg.id), {
+            text: '',
+            imageUrl: '',
+            deleted: true
+          });
+          popup.classList.remove('show');
+        } catch (err) {
+          alert('ডিলিট করতে সমস্যা হয়েছে।');
+          console.error(err);
+        }
+      };
+    }
+
+    return wrapper;
   }
 
-  messagesDiv.appendChild(msgDiv);
-}
-
-// close popup if clicked outside
-document.body.addEventListener('click', () => {
-  document.querySelectorAll('.msg-popup').forEach(el => el.classList.remove('show'));
-});
-
-// scroll to bottom helper
-function scrollToBottom() {
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-// auto scroll on new message added
-// handled in onSnapshot after render
-
-// handle enter key to send message
-messageInput.addEventListener('keydown', (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    sendBtn.click();
+  // Render messages
+  function renderMessages(docs) {
+    chatArea.innerHTML = '';
+    docs.forEach(docSnap => {
+      const data = docSnap.data();
+      const msg = {
+        id: docSnap.id,
+        sender: data.sender,
+        text: data.text || '',
+        imageUrl: data.imageUrl || '',
+        createdAt: data.createdAt,
+        replyToText: data.replyToText || '',
+        deleted: data.deleted || false
+      };
+      const msgElem = createMessageElement(msg);
+      chatArea.appendChild(msgElem);
+    });
+    chatArea.scrollTop = chatArea.scrollHeight;
   }
-});
+
+  // Listen for real-time updates
+  const messagesQuery = query(collection(db, "messages"), orderBy("createdAt"));
+  onSnapshot(messagesQuery, (snapshot) => {
+    renderMessages(snapshot.docs);
+  });
+
+  // Send message function
+  async function sendMessage() {
+    const text = messageInput.value.trim();
+    if(!text && !selectedImageFile) return;
+
+    let imageUrl = '';
+    if(selectedImageFile) {
+      // Upload image to Firebase Storage
+      const storageRef = ref(storage, `images/${Date.now()}_${selectedImageFile.name}`);
+      await uploadBytes(storageRef, selectedImageFile);
+      imageUrl = await getDownloadURL(storageRef);
+    }
+
+    try {
+      await addDoc(collection(db, "messages"), {
+        sender: currentUser,
+        text: text,
+        imageUrl: imageUrl,
+        createdAt: serverTimestamp(),
+        replyToText: replyToMessage ? replyToMessage.text || '[Image]' : '',
+        deleted: false
+      });
+      messageInput.value = '';
+      selectedImageFile = null;
+      hideReplyBar();
+    } catch (err) {
+      alert('পাঠাতে সমস্যা হয়েছে, আবার চেষ্টা করুন।');
+      console.error(err);
+    }
+  }
+
+  // Send button click
+  sendBtn.onclick = sendMessage;
+
+  // Enter key sends message
+  messageInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Image upload handling
+  let selectedImageFile = null;
+  imageUpload.onchange = () => {
+    if(imageUpload.files.length > 0) {
+      selectedImageFile = imageUpload.files[0];
+      sendMessage();
+    }
+  };
+
 </script>
 
 </body>

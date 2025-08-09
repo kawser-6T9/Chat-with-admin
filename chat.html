@@ -270,6 +270,28 @@
   <input type="text" id="messageInput" placeholder="মেসেজ লিখুন..." autocomplete="off" aria-label="Message input"/>
   <button id="sendBtn" aria-label="Send message">পাঠাও</button>
 </div>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { getStorage } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+
+  // তোমার Firebase কনফিগ
+  const firebaseConfig = {
+    apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
+    authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
+    projectId: "chat-with-admin-1ca1a",
+    storageBucket: "chat-with-admin-1ca1a.appspot.com",
+    messagingSenderId: "604406589995",
+    appId: "1:604406589995:web:8baddc0c5752386ffb586e"
+  };
+
+  // Firebase initialize
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  export { db, storage };
+  </script>
 
 <script type="module">
   import { db, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc } from './firebase-config.js';

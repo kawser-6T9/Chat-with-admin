@@ -1,36 +1,515 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Pakhi Chat</title>
-<link rel="stylesheet" href="css/style.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+  body, html {
+    margin:0; padding:0; height:100%;
+    font-family: 'Roboto', sans-serif;
+    background: #e0e7ff url('https://www.transparenttextures.com/patterns/geometry2.png') repeat;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #4f46e5;
+    color: white;
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+  }
+  #usernameDisplay {
+    cursor: pointer;
+    user-select:none;
+  }
+  #logoutBtn {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    display: none;
+    box-shadow: 0 0 8px rgba(239,68,68,0.8);
+    transition: all 0.3s ease;
+  }
+  #logoutBtn.show {
+    display: block;
+    animation: fadeInDown 0.4s ease forwards;
+  }
+  @keyframes fadeInDown {
+    from {opacity:0; transform: translateY(-20px);}
+    to {opacity:1; transform: translateY(0);}
+  }
+
+  #chatContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 700px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  #messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 15px;
+    scroll-behavior: smooth;
+  }
+  .message {
+    max-width: 75%;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    position: relative;
+    word-wrap: break-word;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    animation: fadeIn 0.5s ease;
+  }
+  .msg-self {
+    background: #6366f1;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 2px;
+  }
+  .msg-other {
+    background: #f3f4f6;
+    color: #1f2937;
+    margin-right: auto;
+    border-bottom-left-radius: 2px;
+  }
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+  .msg-header {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+  }
+  .profile-letter {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #7c3aed;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    user-select:none;
+  }
+  .msg-content {
+    white-space: pre-wrap;
+    font-size: 16px;
+    line-height: 1.3;
+  }
+  .msg-time {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 6px;
+    text-align: right;
+    user-select:none;
+  }
+  .msg-image {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.1);
+    transition: transform 0.2s ease;
+  }
+  .msg-image:hover {
+    transform: scale(1.05);
+  }
+
+  /* Reply bar above input */
+  #replyBar {
+    background: #eef2ff;
+    padding: 6px 12px;
+    font-size: 14px;
+    color: #3730a3;
+    border-left: 4px solid #4f46e5;
+    margin: 0 20px 5px 20px;
+    display: none;
+    user-select:none;
+  }
+
+  /* Input container */
+  #inputContainer {
+    padding: 10px 20px;
+    background: white;
+    box-shadow: 0 -2px 6px rgb(0 0 0 / 0.1);
+    display: flex;
+    align-items: center;
+  }
+  #messageInput {
+    flex: 1;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1.8px solid #ddd;
+    border-radius: 24px;
+    outline: none;
+    resize: none;
+    max-height: 100px;
+  }
+  #sendBtn, #imageBtn {
+    background: #4f46e5;
+    border: none;
+    color: white;
+    margin-left: 10px;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(79,70,229,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+  }
+  #sendBtn:hover, #imageBtn:hover {
+    background: #4338ca;
+  }
+  #sendBtn:disabled {
+    background: #a5b4fc;
+    cursor: not-allowed;
+  }
+  #imageInput {
+    display: none;
+  }
+
+  /* Popup menu for message */
+  .msg-popup {
+    position: absolute;
+    top: -38px;
+    right: 0;
+    background: #4f46e5;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    display: flex;
+    gap: 10px;
+    user-select:none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .msg-popup.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .msg-popup button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .msg-popup button:hover {
+    text-decoration: underline;
+  }
+</style>
 </head>
 <body>
 
-<header class="topbar">
-  <div class="title">Pakhi-chat</div>
-  <div id="userBox" class="user-box">
-    <div id="userAvatar" class="avatar small"></div>
-    <div id="userName" class="username"></div>
-  </div>
+<header>
+  Pakhi Chat
+  <div id="usernameDisplay" title="Click to logout"></div>
+  <button id="logoutBtn">Logout</button>
 </header>
 
-<main id="chatWrap">
-  <div id="messages" class="messages" aria-live="polite"></div>
+<div id="chatContainer">
+  <div id="messages"></div>
 
-  <div id="replyBar" class="reply-bar" title="ক্লিক করলে রিপ্লাই বাতিল হবে">
-    Replying to: <span id="replyText"></span>
+  <div id="replyBar"></div>
+
+  <div id="inputContainer">
+    <textarea id="messageInput" rows="1" placeholder="Type your message..."></textarea>
+    <label for="imageInput" title="Send Image" id="imageBtn" aria-label="Send Image" role="button">
+      📷
+    </label>
+    <input type="file" accept="image/*" id="imageInput" />
+    <button id="sendBtn" disabled title="Send message">➡️</button>
   </div>
+</div>
 
-  <div class="input-area">
-    <button id="imgBtn" class="icon-btn" title="ছবি পাঠাও">📷</button>
-    <input id="imageInput" type="file" accept="image/*" style="display:none"/>
-    <input id="messageInput" class="message-input" placeholder="মেসেজ লিখুন..." autocomplete="off" />
-    <button id="sendBtn" class="btn-primary">পাঠাও</button>
-  </div>
-</main>
+<script type="module">
+// Firebase imports from CDN
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-<script type="module" src="js/chat.js"></script>
+// Your Firebase config here:
+const firebaseConfig = {
+  apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
+  authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
+  projectId: "chat-with-admin-1ca1a",
+  storageBucket: "chat-with-admin-1ca1a.firebasestorage.app",
+  messagingSenderId: "604406589995",
+  appId: "1:604406589995:web:8baddc0c5752386ffb586e"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ==== USER LOGIN CHECK & SETUP ====
+let currentUser = sessionStorage.getItem('chatUser');
+if (!currentUser) {
+  currentUser = prompt("তোমার নাম লিখে 'OK' ক্লিক করো।");
+  if (!currentUser || !currentUser.trim()) {
+    alert("নাম দেওয়া বাধ্যতামূলক!");
+    location.reload();
+  } else {
+    currentUser = currentUser.trim();
+    sessionStorage.setItem('chatUser', currentUser);
+  }
+}
+const usernameDisplay = document.getElementById('usernameDisplay');
+const logoutBtn = document.getElementById('logoutBtn');
+usernameDisplay.textContent = currentUser.charAt(0).toUpperCase() + currentUser.slice(1);
+
+usernameDisplay.onclick = () => {
+  if (logoutBtn.classList.contains('show')) {
+    logoutBtn.classList.remove('show');
+  } else {
+    logoutBtn.classList.add('show');
+    setTimeout(() => {
+      logoutBtn.classList.remove('show');
+    }, 4000);
+  }
+};
+logoutBtn.onclick = () => {
+  sessionStorage.removeItem('chatUser');
+  location.reload();
+};
+
+// ==== CHAT UI ELEMENTS ====
+const messagesDiv = document.getElementById('messages');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+const imageInput = document.getElementById('imageInput');
+const replyBar = document.getElementById('replyBar');
+
+let replyTo = null; // message id we are replying to
+
+// Enable/disable send button based on input
+messageInput.addEventListener('input', () => {
+  sendBtn.disabled = messageInput.value.trim() === "" && !imageInput.files.length;
+});
+
+// ==== SEND MESSAGE FUNCTION ====
+async function sendMessage(imageBase64 = null) {
+  const text = messageInput.value.trim();
+  if (!text && !imageBase64) return;
+
+  const newMsg = {
+    sender: currentUser,
+    message: text || "",
+    image: imageBase64 || null,
+    time: new Date().toLocaleString('bn-BD', { hour12: true }),
+    replyTo: replyTo,
+    deleted: false,
+  };
+  try {
+    await addDoc(collection(db, "messages"), newMsg);
+    messageInput.value = "";
+    imageInput.value = "";
+    replyTo = null;
+    replyBar.style.display = "none";
+    sendBtn.disabled = true;
+    scrollToBottom();
+  } catch (err) {
+    alert("মেসেজ পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+    console.error(err);
+  }
+}
+
+// ==== IMAGE UPLOAD HANDLER ====
+imageInput.addEventListener('change', () => {
+  if (imageInput.files.length > 0) {
+    sendBtn.disabled = false;
+  }
+});
+
+// ==== SEND BUTTON CLICK ====
+sendBtn.onclick = async () => {
+  if (imageInput.files.length > 0) {
+    const file = imageInput.files[0];
+    const reader = new FileReader();
+    reader.onload = async function (e) {
+      const base64 = e.target.result;
+      await sendMessage(base64);
+    };
+    reader.readAsDataURL(file);
+  } else {
+    await sendMessage();
+  }
+};
+
+// ==== LOAD AND RENDER MESSAGES ====
+const q = query(collection(db, "messages"), orderBy("time"));
+onSnapshot(q, (snapshot) => {
+  messagesDiv.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    const msg = docSnap.data();
+    const id = docSnap.id;
+    renderMessage(msg, id);
+  });
+  scrollToBottom();
+});
+
+// ==== RENDER MESSAGE FUNCTION ====
+function renderMessage(msg, id) {
+  const isSelf = msg.sender === currentUser;
+  const msgDiv = document.createElement('div');
+  msgDiv.classList.add('message', isSelf ? 'msg-self' : 'msg-other');
+
+  // header with profile letter + name
+  const headerDiv = document.createElement('div');
+  headerDiv.className = 'msg-header';
+
+  const profileLetter = document.createElement('div');
+  profileLetter.className = 'profile-letter';
+  profileLetter.textContent = msg.sender.charAt(0).toUpperCase();
+
+  const nameSpan = document.createElement('span');
+  nameSpan.textContent = msg.sender;
+
+  headerDiv.appendChild(profileLetter);
+  headerDiv.appendChild(nameSpan);
+
+  // message content
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'msg-content';
+  if (msg.deleted) {
+    contentDiv.textContent = "This message was deleted";
+    contentDiv.style.fontStyle = "italic";
+    contentDiv.style.color = "#6b7280";
+  } else if (msg.image) {
+    const imgEl = document.createElement('img');
+    imgEl.src = msg.image;
+    imgEl.alt = "image";
+    imgEl.className = "msg-image";
+    contentDiv.appendChild(imgEl);
+    if (msg.message) {
+      const textNode = document.createTextNode('\n' + msg.message);
+      contentDiv.appendChild(textNode);
+    }
+  } else {
+    contentDiv.textContent = msg.message;
+  }
+
+  // time
+  const timeDiv = document.createElement('div');
+  timeDiv.className = 'msg-time';
+  timeDiv.textContent = msg.time;
+
+  msgDiv.appendChild(headerDiv);
+
+  // reply indicator
+  if (msg.replyTo) {
+    const replySpan = document.createElement('div');
+    replySpan.style.background = isSelf ? '#4338ca' : '#e0e7ff';
+    replySpan.style.color = isSelf ? 'white' : '#4f46e5';
+    replySpan.style.padding = "4px 10px";
+    replySpan.style.borderRadius = "12px";
+    replySpan.style.fontSize = "13px";
+    replySpan.style.marginBottom = "6px";
+    replySpan.style.maxWidth = "90%";
+    replySpan.style.whiteSpace = "nowrap";
+    replySpan.style.overflow = "hidden";
+    replySpan.style.textOverflow = "ellipsis";
+
+    // Find original replied message text from snapshot?
+    // For simplicity, show "Replying to message"
+    replySpan.textContent = "↪️ Replying to message";
+    msgDiv.insertBefore(replySpan, contentDiv);
+  }
+
+  msgDiv.appendChild(contentDiv);
+  msgDiv.appendChild(timeDiv);
+
+  // popup menu for reply/delete
+  const popupMenu = document.createElement('div');
+  popupMenu.className = 'msg-popup';
+  popupMenu.innerHTML = `
+    <button class="replyBtn">Reply</button>
+    ${isSelf ? '<button class="deleteBtn">Delete</button>' : ''}
+  `;
+  msgDiv.appendChild(popupMenu);
+
+  // show popup on message click (toggle)
+  msgDiv.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.querySelectorAll('.msg-popup').forEach(el => el.classList.remove('show'));
+    popupMenu.classList.toggle('show');
+  });
+
+  // reply button click
+  popupMenu.querySelector('.replyBtn').onclick = (e) => {
+    e.stopPropagation();
+    replyTo = id;
+    replyBar.style.display = "block";
+    replyBar.textContent = `Replying to ${msg.sender}: ${msg.message.substring(0, 40)}${msg.message.length > 40 ? '...' : ''}`;
+    messageInput.focus();
+    popupMenu.classList.remove('show');
+  };
+
+  // delete button click
+  if (isSelf) {
+    popupMenu.querySelector('.deleteBtn').onclick = async (e) => {
+      e.stopPropagation();
+      if (confirm("Are you sure you want to delete this message?")) {
+        try {
+          await updateDoc(doc(db, "messages", id), { deleted: true, message: "" });
+        } catch (error) {
+          alert("Delete failed.");
+          console.error(error);
+        }
+      }
+      popupMenu.classList.remove('show');
+    };
+  }
+
+  messagesDiv.appendChild(msgDiv);
+}
+
+// close popup if clicked outside
+document.body.addEventListener('click', () => {
+  document.querySelectorAll('.msg-popup').forEach(el => el.classList.remove('show'));
+});
+
+// scroll to bottom helper
+function scrollToBottom() {
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// auto scroll on new message added
+// handled in onSnapshot after render
+
+// handle enter key to send message
+messageInput.addEventListener('keydown', (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendBtn.click();
+  }
+});
+</script>
+
 </body>
 </html>

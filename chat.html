@@ -1,302 +1,128 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pakhi Chat - Professional</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pakhi Chat — Professional</title>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-  * {
-    box-sizing: border-box;
+  :root{
+    --primary:#2563eb;
+    --accent:#1e40af;
+    --bg:#f3f6fb;
+    --card:#ffffff;
+    --muted:#6b7280;
   }
-  body,html {
-    margin:0; padding:0; height:100%;
-    font-family: 'Inter', sans-serif;
-    background: #f0f4f8 url('https://www.transparenttextures.com/patterns/diamond-upholstery.png') repeat;
-    display: flex; flex-direction: column;
-  }
-  header {
-    background:#2c3e50;
-    color:#ecf0f1;
-    padding: 14px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-    font-size: 20px;
-    position: sticky;
-    top:0;
-    z-index: 100;
-    user-select:none;
-  }
-  #userNameDisplay {
-    cursor: pointer;
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  #logoutBtn {
-    background: #e74c3c;
-    border: none;
-    color: white;
-    font-weight: 600;
-    font-size: 14px;
-    padding: 6px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-  #userNameDisplay:hover #logoutBtn {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  #logoutBtn:hover {
-    background: #c0392b;
-  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  body{background:linear-gradient(180deg,#eef2f7,#f8fafc);display:flex;flex-direction:column}
+  header{background:var(--primary);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
+  header .brand{font-weight:700;font-size:18px}
+  header .user{display:flex;align-items:center;gap:10px}
+  .user .name{cursor:pointer;padding:6px 10px;border-radius:18px;background:rgba(255255255,0.06);}
+  .user button{background:#ef4444;border:none;color:#fff;padding:6px 10px;border-radius:8px;font-weight:700;cursor:pointer;display:none}
+  .user:hover button{display:inline-block}
 
-  main {
-    flex: 1;
-    padding: 16px 20px;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-    background: rgba(255 255 255 / 0.9);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    border-radius: 12px 12px 0 0;
-  }
+  main{flex:1;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+  .chat-wrap{max-width:920px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+  .day-sep{display:flex;justify-content:center;color:var(--muted);font-size:13px;margin:6px 0}
 
-  .message-wrapper {
-    display: flex;
-    align-items: flex-end;
-    max-width: 75%;
-    margin-bottom: 16px;
-    position: relative;
-    animation: slideUpFade 0.3s ease forwards;
-  }
-  @keyframes slideUpFade {
-    from {opacity:0; transform: translateY(15px);}
-    to {opacity:1; transform: translateY(0);}
-  }
+  .msg-row{display:flex;align-items:flex-end;gap:10px;max-width:78%}
+  .msg-left{flex-direction:row}
+  .msg-right{flex-direction:row-reverse;margin-left:auto}
 
-  .message-left {
-    flex-direction: row;
+  .avatar{
+    width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;
+    background:var(--muted);flex-shrink:0;font-size:16px;
   }
-  .message-right {
-    flex-direction: row-reverse;
-    margin-left: auto;
-  }
+  .avatar.self{background:var(--primary)}
 
-  .profile-circle {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: #34495e;
-    color: white;
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 38px;
-    text-align: center;
-    user-select:none;
-    flex-shrink: 0;
+  .bubble{
+    background:var(--card);padding:10px 12px;border-radius:14px;box-shadow:0 4px 10px rgba(2,6,23,0.06);
+    word-break:break-word;max-width:70vw;position:relative;transition:transform 0.12s ease,box-shadow 0.12s;
   }
-  .message-right .profile-circle {
-    background: #2980b9;
-  }
+  .msg-right .bubble{background:var(--primary);color:#fff}
+  .bubble img{max-width:300px;border-radius:10px;display:block;margin-bottom:8px}
 
-  .message-box {
-    padding: 12px 16px;
-    border-radius: 18px;
-    font-size: 15px;
-    line-height: 1.3;
-    max-width: 320px;
-    cursor: pointer;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-    position: relative;
-    word-wrap: break-word;
-  }
-  .message-left .message-box {
-    background: #ecf0f1;
-    color: #2c3e50;
-  }
-  .message-right .message-box {
-    background: #2980b9;
-    color: white;
-    box-shadow: 0 3px 10px rgba(41,128,185,0.5);
-  }
+  .meta{font-size:12px;color:var(--muted);margin-top:6px;display:flex;justify-content:space-between;gap:8px}
+  .msg-right .meta{color:#dbeafe}
 
-  .message-meta {
-    font-size: 11px;
-    margin-top: 6px;
-    user-select:none;
-    display: flex;
-    justify-content: space-between;
-    color: #7f8c8d;
-  }
-  .message-right .message-meta {
-    justify-content: flex-end;
-    color: #d0e6ff;
-  }
+  .popup{position:absolute;top:-42px;right:6px;background:var(--primary);color:#fff;padding:6px 10px;border-radius:8px;display:flex;gap:8px;opacity:0;pointer-events:none;transform:translateY(6px);transition:all .12s}
+  .popup.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+  .popup button{background:transparent;border:none;color:#fff;cursor:pointer;font-weight:700;padding:4px 6px;border-radius:6px}
+  .deleted{font-style:italic;color:#9ca3af}
 
-  .popup-menu {
-    position: absolute;
-    top: -38px;
-    right: 0;
-    background: #2980b9;
-    color: white;
-    font-size: 13px;
-    border-radius: 8px;
-    padding: 6px 10px;
-    display: flex;
-    gap: 14px;
-    user-select:none;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-    z-index: 1000;
-  }
-  .popup-menu.show {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .popup-menu button {
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 6px;
-    transition: background-color 0.25s ease;
-  }
-  .popup-menu button:hover {
-    background-color: #1c5980;
-  }
+  /* reply bar & input */
+  #replyBar{display:none;background:var(--primary);color:#fff;padding:10px 14px;border-radius:8px;margin:0 0 6px 0;align-items:center;justify-content:space-between;gap:12px}
+  #replyBar .txt{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  #replyBar {
-    background: #2980b9;
-    color: white;
-    padding: 10px 18px;
-    font-size: 15px;
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    user-select:none;
-    border-radius: 0 0 12px 12px;
-  }
-  #replyBar span {
-    font-weight: 600;
-    max-width: 85%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  #replyBar button {
-    background: transparent;
-    border: none;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 20px;
-    line-height: 0;
-  }
+  .composer{position:sticky;bottom:0;background:linear-gradient(180deg,rgba(255,255,255,0),#fff);padding:12px 16px;display:flex;justify-content:center;z-index:40}
+  .composer-inner{max-width:920px;width:100%;display:flex;gap:10px;align-items:center;background:#fff;padding:10px;border-radius:12px;box-shadow:0 -6px 20px rgba(2,6,23,0.05)}
+  .file-label{cursor:pointer;font-size:20px;color:var(--primary);user-select:none}
+  .text-input{flex:1;border:1px solid #e6eef8;padding:12px 14px;border-radius:999px;font-size:15px;outline:none;min-height:44px}
+  .send-btn{background:var(--primary);border:none;color:#fff;border-radius:999px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;box-shadow:0 6px 12px rgba(37,99,235,0.25)}
+  .send-btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
 
-  #inputArea {
-    display: flex;
-    padding: 14px 20px;
-    background: white;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    position: sticky;
-    bottom: 0;
-    z-index: 200;
+  /* small */
+  @media (max-width:600px){
+    .bubble img{max-width:80vw}
+    .bubble{max-width:78vw}
+    .avatar{width:34px;height:34px;font-size:14px}
   }
-  #messageInput {
-    flex: 1;
-    border: 1.7px solid #bdc3c7;
-    border-radius: 30px;
-    padding: 10px 20px;
-    font-size: 16px;
-    outline: none;
-    transition: border-color 0.3s ease;
-  }
-  #messageInput:focus {
-    border-color: #2980b9;
-  }
-  #sendBtn {
-    background: #2980b9;
-    border: none;
-    border-radius: 50%;
-    width: 46px;
-    height: 46px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 9px rgba(41,128,185,0.5);
-    transition: background-color 0.3s ease;
-  }
-  #sendBtn:hover {
-    background: #1c5980;
-  }
-  #sendBtn svg {
-    fill: white;
-    width: 26px;
-    height: 26px;
-  }
-  #imageUpload {
-    display: none;
-  }
-  #imageLabel {
-    cursor: pointer;
-    font-size: 25px;
-    color: #2980b9;
-    user-select:none;
-    transition: color 0.3s ease;
-  }
-  #imageLabel:hover {
-    color: #1c5980;
-  }
-  /* continue CSS */
-    .chat-image {
-      max-width: 100%;
-      max-height: 180px;
-      margin-top: 8px;
-      border-radius: 12px;
-      display: block;
-      object-fit: cover;
-    }
-
-    /* small screens */
-    @media (max-width: 600px) {
-      main { padding: 12px; }
-      .message-box { max-width: 78vw; }
-      .profile-circle { width:34px; height:34px; line-height:34px; font-size:16px; }
-    }
-  </style>
+</style>
 </head>
 <body>
 
-  <!-- (header, main, replyBar and inputArea are already present above) -->
-  <!-- Make sure you have these elements in the earlier part:
-       <header>...<div id="userNameDisplay"></div>...</header>
-       <main id="chatArea"></main>
-       <div id="replyBar">...<span id="replyText"></span>...</div>
-       <div id="inputArea">... file input, messageInput, sendBtn ...</div>
-  -->
+<header>
+  <div class="brand" style="color:#fff;font-weight:800">Pakhi Chat</div>
+  <div class="user">
+    <div class="name" id="userNameDisplay">Loading...</div>
+    <button id="logoutBtn">লগআউট</button>
+  </div>
+</header>
+
+<main>
+  <div class="chat-wrap" id="chatWrap">
+    <!-- day separators & messages will be appended here -->
+  </div>
+</main>
+
+<!-- reply preview -->
+<div style="max-width:920px;margin:0 auto;padding:0 16px 8px 16px">
+  <div id="replyBar">
+    <div class="txt" id="replyText">Replying...</div>
+    <button id="cancelReply" title="বাতিল">✖</button>
+  </div>
+</div>
+
+<!-- composer -->
+<div class="composer">
+  <div class="composer-inner">
+    <label class="file-label" for="fileInput" title="ছবি পাঠাও">📷</label>
+    <input id="fileInput" type="file" accept="image/*" style="display:none" />
+    <div style="flex:1">
+      <div contenteditable="true" id="messageInput" class="text-input" placeholder="বার্তা লিখুন..." role="textbox"></div>
+    </div>
+    <button id="sendBtn" class="send-btn" title="পাঠাও">➤</button>
+  </div>
+</div>
 
 <script type="module">
-  // Firebase imports
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-  import {
-    getFirestore, collection, query, orderBy, onSnapshot,
-    addDoc, serverTimestamp, doc, updateDoc
-  } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+/* ==========
+  Professional single-file chat (Firestore + base64 images)
+  Replace firebaseConfig with your project's config.
+  Requires users to have set localStorage.setItem('fdUser', 'Name') before opening this page.
+============*/
 
-  // --- CONFIG: change to your Firebase project config ---
-  const firebaseConfig = {
+// Firebase imports (modular)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, query, orderBy, onSnapshot,
+  serverTimestamp, doc, updateDoc
+} from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+/* ---------- REPLACE THIS WITH YOUR FIREBASE CONFIG ---------- */
+const firebaseConfig = {
     apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
     authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
     projectId: "chat-with-admin-1ca1a",
@@ -304,304 +130,268 @@
     messagingSenderId: "604406589995",
     appId: "1:604406589995:web:8baddc0c5752386ffb586e"
   };
+/* ------------------------------------------------------------ */
 
-  // init
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  // DOM
-  const chatArea = document.getElementById('chatArea');
-  const messageInput = document.getElementById('messageInput');
-  const sendBtn = document.getElementById('sendBtn');
-  const imageUpload = document.getElementById('imageUpload');
-  const replyBar = document.getElementById('replyBar');
-  const replyText = document.getElementById('replyText');
-  const cancelReplyBtn = document.getElementById('cancelReplyBtn');
-  const userNameDisplay = document.getElementById('userNameDisplay');
+// DOM
+const chatWrap = document.getElementById('chatWrap');
+const userNameDisplay = document.getElementById('userNameDisplay');
+const logoutBtn = document.getElementById('logoutBtn');
+const fileInput = document.getElementById('fileInput');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+const replyBar = document.getElementById('replyBar');
+const replyText = document.getElementById('replyText');
+const cancelReply = document.getElementById('cancelReply');
 
-  // current user from localStorage (must be set on login)
-  const currentUser = localStorage.getItem('fdUser');
-  if (!currentUser) {
-    alert('তোমার নাম পাওয়া যায়নি — অনুগ্রহ করে লগইন করে আসো।');
-    window.location.href = 'index.html';
-  }
-  userNameDisplay.textContent = currentUser;
+let currentUser = localStorage.getItem('fdUser') || null;
+if(!currentUser){
+  alert('তোমার নাম পাওয়া যায়নি — লগইন পেজে গিয়ে নাম সেট করো।');
+  window.location.href = 'index.html';
+}
+userNameDisplay.textContent = currentUser;
 
-  // logout button already appended earlier (if not, ensure it exists)
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (!logoutBtn) {
-    // create if missing
-    const btn = document.createElement('button');
-    btn.id = 'logoutBtn';
-    btn.textContent = 'লগআউট';
-    btn.style.marginLeft = '12px';
-    btn.addEventListener('click', () => {
-      localStorage.removeItem('fdUser');
-      window.location.href = 'index.html';
-    });
-    userNameDisplay.appendChild(btn);
+logoutBtn.addEventListener('click', ()=> {
+  localStorage.removeItem('fdUser');
+  location.href = 'index.html';
+});
+
+// replying state
+let replyingTo = null; // { id, text }
+
+// helper: convert File -> base64 (with optional resize)
+function fileToBase64Resized(file, maxWidth=1000, quality=0.75){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      // create image to resize
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width;
+        let h = img.height;
+        if (w > maxWidth){
+          h = Math.round(h * (maxWidth / w));
+          w = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img,0,0,w,h);
+        // toDataURL
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.onerror = err => reject(err);
+      img.src = e.target.result;
+    };
+    reader.onerror = err => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
+// create message element
+function renderMessage(id, msg){
+  const isSelf = msg.sender === currentUser;
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + (isSelf ? 'msg-right' : 'msg-left');
+  row.style.display = 'flex';
+  row.style.alignItems = 'flex-end';
+  row.style.gap = '10px';
+
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar ' + (isSelf ? 'self':'');
+  avatar.textContent = msg.sender ? msg.sender.charAt(0).toUpperCase() : '?';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.style.position = 'relative';
+
+  // if deleted
+  if(msg.deleted){
+    const del = document.createElement('div');
+    del.className = 'deleted';
+    del.textContent = 'This message was deleted';
+    bubble.appendChild(del);
   } else {
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('fdUser');
-      window.location.href = 'index.html';
+    if(msg.replyTo && messagesCache[msg.replyTo]){
+      const repMsg = messagesCache[msg.replyTo];
+      const repDiv = document.createElement('div');
+      repDiv.style.padding = '6px 10px';
+      repDiv.style.borderLeft = '3px solid ' + (isSelf ? '#93c5fd' : '#2563eb');
+      repDiv.style.background = isSelf ? 'rgba(255,255,255,0.06)' : '#f1f7ff';
+      repDiv.style.borderRadius = '8px';
+      repDiv.style.marginBottom = '8px';
+      repDiv.style.fontSize = '13px';
+      repDiv.textContent = repMsg.text ? repMsg.text.slice(0,120) : '[Image]';
+      bubble.appendChild(repDiv);
+    }
+    if(msg.image){
+      const img = document.createElement('img');
+      img.src = msg.image;
+      img.className = 'chat-image';
+      img.alt = 'Image';
+      bubble.appendChild(img);
+    }
+    if(msg.text){
+      const p = document.createElement('div');
+      p.textContent = msg.text;
+      p.style.whiteSpace = 'pre-wrap';
+      bubble.appendChild(p);
+    }
+  }
+
+  // meta (name + time)
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  const timeStr = msg.timestamp && msg.timestamp.toDate ? msg.timestamp.toDate().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+  meta.textContent = `${msg.sender || 'Unknown'} • ${timeStr}`;
+  bubble.appendChild(meta);
+
+  // popup menu
+  const popup = document.createElement('div');
+  popup.className = 'popup';
+  popup.style.right = '6px';
+
+  const btnReply = document.createElement('button');
+  btnReply.textContent = 'Reply';
+  popup.appendChild(btnReply);
+  btnReply.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    replyingTo = { id, text: msg.text || '[Image]' };
+    replyText.textContent = `Replying: ${replyingTo.text.length>80?replyingTo.text.slice(0,80)+'...':replyingTo.text}`;
+    replyBar.style.display = 'flex';
+    popup.classList.remove('show');
+    messageInput.focus();
+  });
+
+  if(isSelf){
+    const btnDel = document.createElement('button');
+    btnDel.textContent = 'Delete';
+    popup.appendChild(btnDel);
+    btnDel.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      if(!confirm('আপনি কি মেসেজটি মুছে ফেলতে চান?')) return;
+      try {
+        const ref = doc(db, 'messages', id);
+        await updateDoc(ref, { deleted: true, text: null, image: null, replyTo: null });
+      } catch(err){
+        console.error('delete error',err); alert('ডিলিট করতে সমস্যা হয়েছে');
+      }
+      popup.classList.remove('show');
     });
   }
 
-  // reply tracking
-  let replyingTo = null; // { id, text }
+  bubble.appendChild(popup);
 
-  function showReplyBar(text) {
-    replyText.textContent = 'Replying to: ' + (text || '[Image]');
-    replyBar.style.display = 'flex';
+  // toggle popup on click
+  bubble.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    document.querySelectorAll('.popup.show').forEach(p=>{ if(p!==popup) p.classList.remove('show'); });
+    popup.classList.toggle('show');
+  });
+
+  // click outside hides popups
+  document.addEventListener('click', ()=> document.querySelectorAll('.popup.show').forEach(p=>p.classList.remove('show')));
+
+  // assemble
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+
+  return row;
+}
+
+// messages cache for reply previews
+const messagesCache = {};
+
+// realtime listener
+const q = query(collection(db, 'messages'), orderBy('timestamp','asc'));
+onSnapshot(q, snap=>{
+  chatWrap.innerHTML = '';
+  // cache
+  snap.forEach(docSnap => messagesCache[docSnap.id] = docSnap.data());
+  // render sequentially
+  snap.forEach(docSnap=>{
+    const id = docSnap.id;
+    const data = docSnap.data();
+    const el = renderMessage(id, data);
+    chatWrap.appendChild(el);
+  });
+  // scroll bottom
+  setTimeout(()=> { window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'}); }, 50);
+});
+
+// send flow
+let sending=false;
+async function handleSend(){
+  if(sending) return;
+  const text = messageInput.innerText.trim();
+  const file = fileInput.files[0];
+  if(!text && !file) return;
+  sending = true;
+  sendBtn.disabled = true;
+  let b64 = null;
+  if(file){
+    try{
+      b64 = await fileToBase64Resized(file, 900, 0.75); // resize to width 900px
+    }catch(err){ console.error(err); alert('ছবি রূপান্তরে সমস্যা'); sending=false; sendBtn.disabled=false; return; }
   }
-  function hideReplyBar() {
+  const msg = {
+    sender: currentUser,
+    text: text || null,
+    image: b64 || null,
+    timestamp: serverTimestamp(),
+    replyTo: replyingTo ? replyingTo.id : null,
+    deleted: false
+  };
+  try{
+    await addDoc(collection(db,'messages'), msg);
+    // reset UI
+    messageInput.innerHTML = '';
+    fileInput.value = '';
     replyingTo = null;
     replyBar.style.display = 'none';
-    replyText.textContent = '';
+    sending=false;
+    sendBtn.disabled=false;
+  }catch(err){
+    console.error(err); alert('পাঠাতে সমস্যা হয়েছে');
+    sending=false; sendBtn.disabled=false;
   }
-  cancelReplyBtn.addEventListener('click', hideReplyBar);
+}
 
-  // file to base64
-  function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = e => resolve(e.target.result);
-      reader.onerror = e => reject(e);
-      reader.readAsDataURL(file);
-    });
+// events
+sendBtn.addEventListener('click', handleSend);
+messageInput.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); handleSend(); }
+});
+fileInput.addEventListener('change', ()=>{ /* send when file chosen? we keep manual send */ });
+
+// cancel reply
+cancelReply.addEventListener('click', ()=>{
+  replyingTo = null; replyBar.style.display='none';
+});
+
+// utility: set caret to end in contenteditable after focus
+function placeCaretAtEnd(el){
+  el.focus();
+  if(typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined"){
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
   }
+}
 
-  // send cooldown to avoid accidental spamming & animation issues
-  let sending = false;
-  async function sendMessage() {
-    if (sending) return;
-    const text = messageInput.value.trim();
-    const file = imageUpload.files[0];
+// focus behavior
+messageInput.addEventListener('focus', ()=> placeCaretAtEnd(messageInput));
 
-    if (!text && !file) return; // nothing to send
+/* Optional: initial scroll to bottom after load */
+setTimeout(()=> window.scrollTo({top:document.body.scrollHeight}),400);
 
-    sending = true;
-    sendBtn.disabled = true;
-    sendBtn.style.opacity = '0.6';
-
-    let imageBase64 = null;
-    if (file) {
-      try {
-        // optionally resize/compress on client before converting (not included here)
-        imageBase64 = await fileToBase64(file);
-        // if very large images, consider using canvas to reduce quality/size
-      } catch (e) {
-        console.error('file->base64 error', e);
-        alert('ছবি রূপান্তরে সমস্যা হয়েছে।');
-        sending = false;
-        sendBtn.disabled = false;
-        sendBtn.style.opacity = '1';
-        return;
-      }
-    }
-
-    const messageObj = {
-      sender: currentUser,
-      text: text || null,
-      image: imageBase64 || null,
-      timestamp: serverTimestamp(),
-      replyTo: replyingTo ? replyingTo.id : null,
-      deleted: false
-    };
-
-    try {
-      await addDoc(collection(db, 'messages'), messageObj);
-      // success
-      messageInput.value = '';
-      imageUpload.value = '';
-      hideReplyBar();
-      // small UX delay for animation
-      setTimeout(() => {
-        sending = false;
-        sendBtn.disabled = false;
-        sendBtn.style.opacity = '1';
-      }, 700);
-    } catch (err) {
-      console.error('send error', err);
-      alert('মেসেজ পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
-      sending = false;
-      sendBtn.disabled = false;
-      sendBtn.style.opacity = '1';
-    }
-  }
-
-  // enable/disable send btn based on input/file
-  function updateSendBtnState() {
-    sendBtn.disabled = !(messageInput.value.trim() || (imageUpload && imageUpload.files && imageUpload.files.length));
-  }
-  messageInput.addEventListener('input', updateSendBtnState);
-  imageUpload.addEventListener('change', () => {
-    updateSendBtnState();
-  });
-
-  // handle Enter send (shift+enter newline)
-  messageInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-  sendBtn.addEventListener('click', sendMessage);
-
-  // cache messages for reply preview
-  const messagesCache = {};
-
-  // render single message
-  function renderMessage(id, data) {
-    const isSelf = data.sender === currentUser;
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'message-wrapper ' + (isSelf ? 'message-right' : 'message-left');
-    wrapper.dataset.id = id;
-
-    // profile circle
-    const profile = document.createElement('div');
-    profile.className = 'profile-circle';
-    profile.textContent = data.sender ? data.sender.charAt(0).toUpperCase() : '?';
-
-    // message box
-    const box = document.createElement('div');
-    box.className = 'message-box';
-
-    // if deleted
-    if (data.deleted) {
-      const del = document.createElement('div');
-      del.className = 'deleted';
-      del.textContent = 'This message was deleted';
-      del.style.fontStyle = 'italic';
-      del.style.opacity = isSelf ? '0.9' : '0.8';
-      box.appendChild(del);
-    } else {
-      // reply snippet if any
-      if (data.replyTo && messagesCache[data.replyTo]) {
-        const replied = messagesCache[data.replyTo];
-        const repDiv = document.createElement('div');
-        repDiv.style.fontSize = '13px';
-        repDiv.style.padding = '6px 10px';
-        repDiv.style.marginBottom = '8px';
-        repDiv.style.borderLeft = `3px solid ${isSelf ? '#93c5fd' : '#2563eb'}`;
-        repDiv.style.background = isSelf ? 'rgba(255 255 255 / 0.08)' : '#eef2ff';
-        repDiv.style.color = isSelf ? '#e6f0ff' : '#0f172a';
-        repDiv.style.borderRadius = '8px';
-        repDiv.textContent = replied.text ? replied.text.slice(0, 120) : '[Image]';
-        box.appendChild(repDiv);
-      }
-
-      // image if any
-      if (data.image) {
-        const img = document.createElement('img');
-        img.className = 'chat-image';
-        img.src = data.image;
-        img.alt = 'Image';
-        box.appendChild(img);
-      }
-
-      // text if any
-      if (data.text) {
-        const p = document.createElement('div');
-        p.textContent = data.text;
-        p.style.whiteSpace = 'pre-wrap';
-        box.appendChild(p);
-      }
-    }
-
-    // meta
-    const meta = document.createElement('div');
-    meta.className = 'message-meta ' + (isSelf ? 'message-meta-right' : 'message-meta-left');
-    let timeText = '';
-    if (data.timestamp && data.timestamp.toDate) {
-      timeText = data.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-    meta.textContent = `${data.sender || 'Unknown'} • ${timeText}`;
-    box.appendChild(meta);
-
-    // popup menu
-    const popup = document.createElement('div');
-    popup.className = 'popup-menu';
-    const replyBtn = document.createElement('button');
-    replyBtn.textContent = 'Reply';
-    popup.appendChild(replyBtn);
-
-    if (isSelf) {
-      const delBtn = document.createElement('button');
-      delBtn.textContent = 'Delete';
-      popup.appendChild(delBtn);
-      delBtn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        if (!confirm('আপনি কি মেসেজ মুছে ফেলতে চান?')) return;
-        try {
-          const messageRef = doc(db, 'messages', id);
-          await updateDoc(messageRef, { deleted: true, text: null, image: null, replyTo: null });
-        } catch (err) {
-          console.error('delete error', err);
-          alert('ডিলিট করতে সমস্যা হয়েছে।');
-        }
-      });
-    }
-
-    // reply button action
-    replyBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      replyingTo = { id, text: data.text || '[Image]' };
-      showReplyBar(replyingTo.text);
-      popup.classList.remove('show');
-      messageInput.focus();
-    });
-
-    // toggle popup on box click
-    box.addEventListener('click', (e) => {
-      e.stopPropagation();
-      // close other popups
-      document.querySelectorAll('.popup-menu.show').forEach(el => { if (el !== popup) el.classList.remove('show'); });
-      popup.classList.toggle('show');
-    });
-
-    // hide popup on outside click
-    document.addEventListener('click', () => {
-      popup.classList.remove('show');
-    });
-
-    box.appendChild(popup);
-
-    wrapper.appendChild(profile);
-    wrapper.appendChild(box);
-
-    return wrapper;
-  }
-
-  // realtime listener
-  const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'asc'));
-
-  onSnapshot(messagesQuery, (snap) => {
-    chatArea.innerHTML = '';
-    // first cache all docs so replyTo can show text
-    snap.forEach(docSnap => {
-      messagesCache[docSnap.id] = docSnap.data();
-    });
-    // then render
-    snap.forEach(docSnap => {
-      const data = docSnap.data();
-      const id = docSnap.id;
-      const el = renderMessage(id, data);
-      chatArea.appendChild(el);
-    });
-    // auto scroll to bottom
-    chatArea.scrollTop = chatArea.scrollHeight;
-    updateSendBtnState();
-  });
-
-  // helper: update send btn state initially
-  updateSendBtnState();
-
-  // optional: client-side reduce image size (not implemented here). If very large images cause failures,
-  // consider resizing using canvas before converting to base64.
-
-  // end of script
 </script>
 </body>
 </html>

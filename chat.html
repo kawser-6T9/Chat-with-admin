@@ -3,89 +3,79 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Fresh Pakhi Chat</title>
-
+<title>Pakhi Chat - Professional</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
   * {
     box-sizing: border-box;
   }
-  body, html {
-    margin: 0; padding: 0; height: 100vh;
-    font-family: 'Roboto', sans-serif;
-    background: #f0f4f8 url('https://www.transparenttextures.com/patterns/cubes.png') repeat;
-    display: flex;
-    flex-direction: column;
+  body,html {
+    margin:0; padding:0; height:100%;
+    font-family: 'Inter', sans-serif;
+    background: #f0f4f8 url('https://www.transparenttextures.com/patterns/diamond-upholstery.png') repeat;
+    display: flex; flex-direction: column;
   }
-
   header {
-    background: #2563eb;
-    color: white;
-    padding: 15px 20px;
-    font-weight: 700;
-    font-size: 22px;
+    background:#2c3e50;
+    color:#ecf0f1;
+    padding: 14px 20px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
+    font-weight: 600;
+    font-size: 20px;
     position: sticky;
-    top: 0;
-    user-select: none;
-    z-index: 50;
+    top:0;
+    z-index: 100;
+    user-select:none;
   }
-
   #userNameDisplay {
     cursor: pointer;
     position: relative;
-    padding: 6px 12px;
-    border-radius: 20px;
-    transition: background-color 0.3s ease;
-  }
-  #userNameDisplay:hover {
-    background-color: rgba(255 255 255 / 0.2);
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
   #logoutBtn {
-    position: absolute;
-    top: 110%;
-    right: 0;
-    background: #f87171;
-    border-radius: 10px;
+    background: #e74c3c;
+    border: none;
     color: white;
-    font-weight: 700;
-    padding: 8px 15px;
+    font-weight: 600;
     font-size: 14px;
+    padding: 6px 14px;
+    border-radius: 8px;
     cursor: pointer;
-    user-select:none;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    transform: translateY(-10px);
-    white-space: nowrap;
+    transition: opacity 0.3s ease;
   }
-  #logoutBtn.show {
+  #userNameDisplay:hover #logoutBtn {
     opacity: 1;
     pointer-events: auto;
-    transform: translateY(0);
+  }
+  #logoutBtn:hover {
+    background: #c0392b;
   }
 
   main {
     flex: 1;
+    padding: 16px 20px;
     overflow-y: auto;
-    padding: 15px 20px;
     scroll-behavior: smooth;
-    background: white;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
+    background: rgba(255 255 255 / 0.9);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    border-radius: 12px 12px 0 0;
   }
 
   .message-wrapper {
-    margin-bottom: 14px;
     display: flex;
     align-items: flex-end;
     max-width: 75%;
+    margin-bottom: 16px;
     position: relative;
-    animation: fadeIn 0.4s ease forwards;
+    animation: slideUpFade 0.3s ease forwards;
   }
-  @keyframes fadeIn {
+  @keyframes slideUpFade {
     from {opacity:0; transform: translateY(15px);}
     to {opacity:1; transform: translateY(0);}
   }
@@ -102,56 +92,60 @@
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: #2563eb;
+    background: #34495e;
     color: white;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 20px;
     line-height: 38px;
     text-align: center;
-    user-select: none;
-    margin: 0 12px;
+    user-select:none;
     flex-shrink: 0;
+  }
+  .message-right .profile-circle {
+    background: #2980b9;
   }
 
   .message-box {
-    background: white;
-    padding: 12px 18px;
-    border-radius: 16px;
+    padding: 12px 16px;
+    border-radius: 18px;
     font-size: 15px;
     line-height: 1.3;
     max-width: 320px;
-    word-wrap: break-word;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
     cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
     position: relative;
-    user-select:none;
+    word-wrap: break-word;
+  }
+  .message-left .message-box {
+    background: #ecf0f1;
+    color: #2c3e50;
   }
   .message-right .message-box {
-    background: #2563eb;
+    background: #2980b9;
     color: white;
-    box-shadow: 0 3px 10px rgba(37,99,235,0.7);
+    box-shadow: 0 3px 10px rgba(41,128,185,0.5);
   }
 
   .message-meta {
     font-size: 11px;
-    margin-top: 4px;
+    margin-top: 6px;
     user-select:none;
+    display: flex;
+    justify-content: space-between;
+    color: #7f8c8d;
   }
-  .message-meta-left {
-    color: #475569;
-  }
-  .message-meta-right {
-    color: #a5b4fc;
-    text-align: right;
+  .message-right .message-meta {
+    justify-content: flex-end;
+    color: #d0e6ff;
   }
 
   .popup-menu {
     position: absolute;
-    top: -40px;
+    top: -38px;
     right: 0;
-    background: #2563eb;
+    background: #2980b9;
     color: white;
-    font-size: 14px;
+    font-size: 13px;
     border-radius: 8px;
     padding: 6px 10px;
     display: flex;
@@ -159,8 +153,8 @@
     user-select:none;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
-    z-index: 200;
+    transition: opacity 0.25s ease;
+    z-index: 1000;
   }
   .popup-menu.show {
     opacity: 1;
@@ -170,29 +164,30 @@
     background: transparent;
     border: none;
     color: white;
-    font-weight: 700;
     cursor: pointer;
-    padding: 3px 6px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    transition: background-color 0.25s ease;
   }
   .popup-menu button:hover {
-    background-color: #1e40af;
+    background-color: #1c5980;
   }
 
   #replyBar {
-    background: #2563eb;
+    background: #2980b9;
     color: white;
     padding: 10px 18px;
-    font-size: 14px;
+    font-size: 15px;
     display: none;
     align-items: center;
     justify-content: space-between;
     user-select:none;
+    border-radius: 0 0 12px 12px;
   }
   #replyBar span {
     font-weight: 600;
-    max-width: 80%;
+    max-width: 85%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -201,37 +196,37 @@
     background: transparent;
     border: none;
     color: white;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     font-size: 20px;
-    line-height: 18px;
+    line-height: 0;
   }
 
   #inputArea {
     display: flex;
-    padding: 14px 18px;
+    padding: 14px 20px;
     background: white;
     align-items: center;
     gap: 12px;
-    box-shadow: 0 -1px 8px rgba(0,0,0,0.12);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     position: sticky;
     bottom: 0;
-    z-index: 30;
+    z-index: 200;
   }
   #messageInput {
     flex: 1;
-    border: 1.7px solid #ccc;
-    border-radius: 28px;
-    padding: 12px 22px;
-    font-size: 17px;
+    border: 1.7px solid #bdc3c7;
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-size: 16px;
     outline: none;
     transition: border-color 0.3s ease;
   }
   #messageInput:focus {
-    border-color: #2563eb;
+    border-color: #2980b9;
   }
   #sendBtn {
-    background: #2563eb;
+    background: #2980b9;
     border: none;
     border-radius: 50%;
     width: 46px;
@@ -240,67 +235,67 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 4px 9px rgba(41,128,185,0.5);
     transition: background-color 0.3s ease;
   }
   #sendBtn:hover {
-    background-color: #1d4ed8;
+    background: #1c5980;
   }
   #sendBtn svg {
     fill: white;
     width: 26px;
     height: 26px;
   }
-
   #imageUpload {
     display: none;
   }
   #imageLabel {
     cursor: pointer;
-    font-size: 24px;
-    color: #2563eb;
+    font-size: 25px;
+    color: #2980b9;
     user-select:none;
+    transition: color 0.3s ease;
   }
+  #imageLabel:hover {
+    color: #1c5980;
+  }
+  /* continue CSS */
+    .chat-image {
+      max-width: 100%;
+      max-height: 180px;
+      margin-top: 8px;
+      border-radius: 12px;
+      display: block;
+      object-fit: cover;
+    }
 
-  img.chat-image {
-    max-width: 260px;
-    border-radius: 16px;
-    margin-top: 6px;
-    display: block;
-  }
-</style>
+    /* small screens */
+    @media (max-width: 600px) {
+      main { padding: 12px; }
+      .message-box { max-width: 78vw; }
+      .profile-circle { width:34px; height:34px; line-height:34px; font-size:16px; }
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <div id="userNameDisplay"></div>
-</header>
-
-<main id="chatArea"></main>
-
-<!-- রিপ্লাই বার -->
-<div id="replyBar">
-  <span id="replyText"></span>
-  <button id="cancelReplyBtn" title="রিপ্লাই বাতিল করুন">&times;</button>
-</div>
-
-<!-- ইনপুট এরিয়া -->
-<div id="inputArea">
-  <label for="imageUpload" id="imageLabel" title="ছবি পাঠাও 📷">📷</label>
-  <input type="file" accept="image/*" id="imageUpload" />
-  <input type="text" id="messageInput" placeholder="বার্তা লিখুন..." autocomplete="off" />
-  <button id="sendBtn" title="পাঠাও">
-    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-  </button>
-</div>
+  <!-- (header, main, replyBar and inputArea are already present above) -->
+  <!-- Make sure you have these elements in the earlier part:
+       <header>...<div id="userNameDisplay"></div>...</header>
+       <main id="chatArea"></main>
+       <div id="replyBar">...<span id="replyText"></span>...</div>
+       <div id="inputArea">... file input, messageInput, sendBtn ...</div>
+  -->
 
 <script type="module">
+  // Firebase imports
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
   import {
     getFirestore, collection, query, orderBy, onSnapshot,
-    addDoc, serverTimestamp, doc, deleteDoc, updateDoc
+    addDoc, serverTimestamp, doc, updateDoc
   } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-  // ফায়ারবেস কনফিগ (নিজের প্রোজেক্টের সেট করুন)
+  // --- CONFIG: change to your Firebase project config ---
   const firebaseConfig = {
     apiKey: "AIzaSyDSe4qhkuSpQCLfXWV4hMEV9iSyuTYi_nQ",
     authDomain: "chat-with-admin-1ca1a.firebaseapp.com",
@@ -310,19 +305,11 @@
     appId: "1:604406589995:web:8baddc0c5752386ffb586e"
   };
 
-  // Firebase ইনিশিয়ালাইজ
+  // init
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // লোকালস্টোরেজ থেকে ইউজারনেম
-  let currentUser = localStorage.getItem('fdUser');
-  if (!currentUser) {
-    alert('আপনার নাম লগইন পেজ থেকে সেট করুন।');
-    window.location.href = 'index.html'; // লগইন পেজে পাঠানো
-  }
-
-  // DOM এলিমেন্টস
-  const userNameDisplay = document.getElementById('userNameDisplay');
+  // DOM
   const chatArea = document.getElementById('chatArea');
   const messageInput = document.getElementById('messageInput');
   const sendBtn = document.getElementById('sendBtn');
@@ -330,269 +317,291 @@
   const replyBar = document.getElementById('replyBar');
   const replyText = document.getElementById('replyText');
   const cancelReplyBtn = document.getElementById('cancelReplyBtn');
+  const userNameDisplay = document.getElementById('userNameDisplay');
 
-  // ইউজারনেম দেখানো ও লগআউট বাটন যোগ করা
+  // current user from localStorage (must be set on login)
+  const currentUser = localStorage.getItem('fdUser');
+  if (!currentUser) {
+    alert('তোমার নাম পাওয়া যায়নি — অনুগ্রহ করে লগইন করে আসো।');
+    window.location.href = 'index.html';
+  }
   userNameDisplay.textContent = currentUser;
 
-  // লগআউট বাটন তৈরি
-  const logoutBtn = document.createElement('button');
-  logoutBtn.id = 'logoutBtn';
-  logoutBtn.textContent = 'লগআউট';
-  userNameDisplay.appendChild(logoutBtn);
+  // logout button already appended earlier (if not, ensure it exists)
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (!logoutBtn) {
+    // create if missing
+    const btn = document.createElement('button');
+    btn.id = 'logoutBtn';
+    btn.textContent = 'লগআউট';
+    btn.style.marginLeft = '12px';
+    btn.addEventListener('click', () => {
+      localStorage.removeItem('fdUser');
+      window.location.href = 'index.html';
+    });
+    userNameDisplay.appendChild(btn);
+  } else {
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('fdUser');
+      window.location.href = 'index.html';
+    });
+  }
 
-  // লগআউট ক্লিক
-  logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('fdUser');
-    window.location.href = 'index.html'; // লগইন পেজ
-  });
+  // reply tracking
+  let replyingTo = null; // { id, text }
 
-  // লোগআউট বাটন দেখানো/লুকানো ইউজারনেম হোভার এ
-  userNameDisplay.addEventListener('mouseenter', () => {
-    logoutBtn.classList.add('show');
-  });
-  userNameDisplay.addEventListener('mouseleave', () => {
-    logoutBtn.classList.remove('show');
-  });
+  function showReplyBar(text) {
+    replyText.textContent = 'Replying to: ' + (text || '[Image]');
+    replyBar.style.display = 'flex';
+  }
+  function hideReplyBar() {
+    replyingTo = null;
+    replyBar.style.display = 'none';
+    replyText.textContent = '';
+  }
+  cancelReplyBtn.addEventListener('click', hideReplyBar);
 
-  // রিপ্লাই করার জন্য মেসেজ আইডি এবং টেক্সট
-  let replyingTo = null;
-
-  // ফাইল থেকে base64 বানানো ফাংশন
+  // file to base64
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = e => resolve(e.target.result);
-      reader.onerror = err => reject(err);
+      reader.onerror = e => reject(e);
       reader.readAsDataURL(file);
     });
   }
 
-  // মেসেজ সেন্ড ফাংশন
+  // send cooldown to avoid accidental spamming & animation issues
+  let sending = false;
   async function sendMessage() {
+    if (sending) return;
     const text = messageInput.value.trim();
     const file = imageUpload.files[0];
 
-    if (!text && !file) {
-      alert('কোনো বার্তা বা ছবি সিলেক্ট করুন');
-      return;
-    }
+    if (!text && !file) return; // nothing to send
+
+    sending = true;
+    sendBtn.disabled = true;
+    sendBtn.style.opacity = '0.6';
 
     let imageBase64 = null;
     if (file) {
       try {
+        // optionally resize/compress on client before converting (not included here)
         imageBase64 = await fileToBase64(file);
+        // if very large images, consider using canvas to reduce quality/size
       } catch (e) {
-        alert('ছবি রূপান্তরে সমস্যা হয়েছে');
+        console.error('file->base64 error', e);
+        alert('ছবি রূপান্তরে সমস্যা হয়েছে।');
+        sending = false;
+        sendBtn.disabled = false;
+        sendBtn.style.opacity = '1';
         return;
       }
     }
 
-    const messageData = {
+    const messageObj = {
       sender: currentUser,
-      timestamp: serverTimestamp(),
       text: text || null,
       image: imageBase64 || null,
+      timestamp: serverTimestamp(),
       replyTo: replyingTo ? replyingTo.id : null,
       deleted: false
     };
 
     try {
-      await addDoc(collection(db, "messages"), messageData);
+      await addDoc(collection(db, 'messages'), messageObj);
+      // success
+      messageInput.value = '';
+      imageUpload.value = '';
+      hideReplyBar();
+      // small UX delay for animation
+      setTimeout(() => {
+        sending = false;
+        sendBtn.disabled = false;
+        sendBtn.style.opacity = '1';
+      }, 700);
     } catch (err) {
-      alert('মেসেজ পাঠাতে সমস্যা হয়েছে!');
-      console.error(err);
+      console.error('send error', err);
+      alert('মেসেজ পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+      sending = false;
+      sendBtn.disabled = false;
+      sendBtn.style.opacity = '1';
     }
-
-    // ইনপুট ক্লিয়ার ও রিপ্লাই বার হাইড
-    messageInput.value = '';
-    imageUpload.value = '';
-    clearReply();
   }
 
-  sendBtn.addEventListener('click', sendMessage);
-  messageInput.addEventListener('keypress', e => {
-    if (e.key === 'Enter') sendMessage();
+  // enable/disable send btn based on input/file
+  function updateSendBtnState() {
+    sendBtn.disabled = !(messageInput.value.trim() || (imageUpload && imageUpload.files && imageUpload.files.length));
+  }
+  messageInput.addEventListener('input', updateSendBtnState);
+  imageUpload.addEventListener('change', () => {
+    updateSendBtnState();
   });
 
-  cancelReplyBtn.addEventListener('click', clearReply);
+  // handle Enter send (shift+enter newline)
+  messageInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+  sendBtn.addEventListener('click', sendMessage);
 
-  function clearReply() {
-    replyingTo = null;
-    replyBar.style.display = 'none';
-    replyText.textContent = '';
-  }
+  // cache messages for reply preview
+  const messagesCache = {};
 
-  // মেসেজ রেন্ডার ফাংশন
-  function renderMessage(msg, msgId) {
-    const isCurrentUser = msg.sender === currentUser;
+  // render single message
+  function renderMessage(id, data) {
+    const isSelf = data.sender === currentUser;
 
     const wrapper = document.createElement('div');
-    wrapper.classList.add('message-wrapper', isCurrentUser ? 'message-right' : 'message-left');
-    wrapper.dataset.msgId = msgId;
+    wrapper.className = 'message-wrapper ' + (isSelf ? 'message-right' : 'message-left');
+    wrapper.dataset.id = id;
 
-    // প্রোফাইল ইনিশিয়াল
-    const profileCircle = document.createElement('div');
-    profileCircle.className = 'profile-circle';
-    profileCircle.textContent = msg.sender.charAt(0).toUpperCase();
+    // profile circle
+    const profile = document.createElement('div');
+    profile.className = 'profile-circle';
+    profile.textContent = data.sender ? data.sender.charAt(0).toUpperCase() : '?';
 
-    // মেসেজ বক্স
-    const msgBox = document.createElement('div');
-    msgBox.className = 'message-box';
+    // message box
+    const box = document.createElement('div');
+    box.className = 'message-box';
 
-    // যদি মেসেজ ডিলিট করা থাকে
-    if (msg.deleted) {
-      msgBox.textContent = 'This message was deleted';
-      msgBox.style.fontStyle = 'italic';
-      msgBox.style.color = isCurrentUser ? '#d1d5db' : '#6b7280';
+    // if deleted
+    if (data.deleted) {
+      const del = document.createElement('div');
+      del.className = 'deleted';
+      del.textContent = 'This message was deleted';
+      del.style.fontStyle = 'italic';
+      del.style.opacity = isSelf ? '0.9' : '0.8';
+      box.appendChild(del);
     } else {
-      // রিপ্লাই থাকলে রিপ্লাই অংশ যোগ করব
-      if (msg.replyTo && messagesCache[msg.replyTo]) {
-        const repliedMsg = messagesCache[msg.replyTo];
-        const replyDiv = document.createElement('div');
-        replyDiv.style.backgroundColor = isCurrentUser ? 'rgba(255 255 255 / 0.25)' : '#e5e7eb';
-        replyDiv.style.padding = '6px 10px';
-        replyDiv.style.marginBottom = '8px';
-        replyDiv.style.borderLeft = `4px solid ${isCurrentUser ? '#93c5fd' : '#2563eb'}`;
-        replyDiv.style.fontSize = '13px';
-        replyDiv.style.color = isCurrentUser ? 'white' : 'black';
-        replyDiv.style.borderRadius = '8px';
-        replyDiv.style.userSelect = 'none';
-        replyDiv.textContent = (repliedMsg.text) ? repliedMsg.text : '[ছবি]';
-        msgBox.appendChild(replyDiv);
+      // reply snippet if any
+      if (data.replyTo && messagesCache[data.replyTo]) {
+        const replied = messagesCache[data.replyTo];
+        const repDiv = document.createElement('div');
+        repDiv.style.fontSize = '13px';
+        repDiv.style.padding = '6px 10px';
+        repDiv.style.marginBottom = '8px';
+        repDiv.style.borderLeft = `3px solid ${isSelf ? '#93c5fd' : '#2563eb'}`;
+        repDiv.style.background = isSelf ? 'rgba(255 255 255 / 0.08)' : '#eef2ff';
+        repDiv.style.color = isSelf ? '#e6f0ff' : '#0f172a';
+        repDiv.style.borderRadius = '8px';
+        repDiv.textContent = replied.text ? replied.text.slice(0, 120) : '[Image]';
+        box.appendChild(repDiv);
       }
 
-      // মেসেজ টেক্সট যোগ
-      if (msg.text) {
-        const textNode = document.createTextNode(msg.text);
-        msgBox.appendChild(textNode);
-      }
-
-      // ইমেজ যোগ
-      if (msg.image) {
+      // image if any
+      if (data.image) {
         const img = document.createElement('img');
         img.className = 'chat-image';
-        img.src = msg.image;
-        msgBox.appendChild(document.createElement('br'));
-        msgBox.appendChild(img);
+        img.src = data.image;
+        img.alt = 'Image';
+        box.appendChild(img);
+      }
+
+      // text if any
+      if (data.text) {
+        const p = document.createElement('div');
+        p.textContent = data.text;
+        p.style.whiteSpace = 'pre-wrap';
+        box.appendChild(p);
       }
     }
 
-    // মেটা ডিভ (নাম + সময়)
+    // meta
     const meta = document.createElement('div');
-    meta.className = 'message-meta ' + (isCurrentUser ? 'message-meta-right' : 'message-meta-left');
-
-    let timeString = '';
-    if (msg.timestamp && msg.timestamp.toDate) {
-      timeString = msg.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    meta.className = 'message-meta ' + (isSelf ? 'message-meta-right' : 'message-meta-left');
+    let timeText = '';
+    if (data.timestamp && data.timestamp.toDate) {
+      timeText = data.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
-    meta.textContent = `${msg.sender} • ${timeString}`;
+    meta.textContent = `${data.sender || 'Unknown'} • ${timeText}`;
+    box.appendChild(meta);
 
-    // পপআপ মেনু (Reply/Delete)
-    const popupMenu = document.createElement('div');
-    popupMenu.className = 'popup-menu';
-    popupMenu.innerHTML = `
-      <button class="reply-btn">Reply</button>
-      ${isCurrentUser ? '<button class="delete-btn">Delete</button>' : ''}
-    `;
-    msgBox.appendChild(popupMenu);
+    // popup menu
+    const popup = document.createElement('div');
+    popup.className = 'popup-menu';
+    const replyBtn = document.createElement('button');
+    replyBtn.textContent = 'Reply';
+    popup.appendChild(replyBtn);
 
-    // মেসেজ বক্সে ক্লিক করলে পপআপ মেনু টগল হবে
-    msgBox.addEventListener('click', e => {
-      e.stopPropagation();
-      closeAllPopupsExcept(popupMenu);
-      popupMenu.classList.toggle('show');
-    });
-
-    // Reply button click
-    popupMenu.querySelector('.reply-btn').addEventListener('click', e => {
-      e.stopPropagation();
-      replyToMessage(msg, msgId);
-      popupMenu.classList.remove('show');
-    });
-
-    // Delete button click (নিজের মেসেজ)
-    if (isCurrentUser) {
-      popupMenu.querySelector('.delete-btn').addEventListener('click', async e => {
+    if (isSelf) {
+      const delBtn = document.createElement('button');
+      delBtn.textContent = 'Delete';
+      popup.appendChild(delBtn);
+      delBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
-        const confirmDelete = confirm('আপনি কি মেসেজটি মুছে ফেলতে চান?');
-        if (confirmDelete) {
-          await deleteMessage(msgId);
+        if (!confirm('আপনি কি মেসেজ মুছে ফেলতে চান?')) return;
+        try {
+          const messageRef = doc(db, 'messages', id);
+          await updateDoc(messageRef, { deleted: true, text: null, image: null, replyTo: null });
+        } catch (err) {
+          console.error('delete error', err);
+          alert('ডিলিট করতে সমস্যা হয়েছে।');
         }
-        popupMenu.classList.remove('show');
       });
     }
 
-    // ক্লোজ মেনু ক্লিক আউটসাইড
-    document.addEventListener('click', () => {
-      popupMenu.classList.remove('show');
+    // reply button action
+    replyBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      replyingTo = { id, text: data.text || '[Image]' };
+      showReplyBar(replyingTo.text);
+      popup.classList.remove('show');
+      messageInput.focus();
     });
 
-    wrapper.appendChild(profileCircle);
-    wrapper.appendChild(msgBox);
-    wrapper.appendChild(meta);
+    // toggle popup on box click
+    box.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // close other popups
+      document.querySelectorAll('.popup-menu.show').forEach(el => { if (el !== popup) el.classList.remove('show'); });
+      popup.classList.toggle('show');
+    });
+
+    // hide popup on outside click
+    document.addEventListener('click', () => {
+      popup.classList.remove('show');
+    });
+
+    box.appendChild(popup);
+
+    wrapper.appendChild(profile);
+    wrapper.appendChild(box);
 
     return wrapper;
   }
 
-  // সকল পপআপ মেনু ক্লোজ করা
-  function closeAllPopupsExcept(exceptElem) {
-    document.querySelectorAll('.popup-menu.show').forEach(menu => {
-      if (menu !== exceptElem) {
-        menu.classList.remove('show');
-      }
-    });
-  }
+  // realtime listener
+  const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'asc'));
 
-  // রিপ্লাই ফাংশন
-  function replyToMessage(msg, msgId) {
-    replyingTo = { id: msgId, text: msg.text || '[ছবি]' };
-    replyText.textContent = `Replying to: ${replyingTo.text}`;
-    replyBar.style.display = 'flex';
-    messageInput.focus();
-  }
-
-  // রিপ্লাই ক্লিয়ার
-  function clearReply() {
-    replyingTo = null;
-    replyBar.style.display = 'none';
-    replyText.textContent = '';
-  }
-
-  cancelReplyBtn.addEventListener('click', clearReply);
-
-  // মেসেজ ডিলিট (Firestore এ deleted: true করে)
-  async function deleteMessage(id) {
-    try {
-      const messageRef = doc(db, 'messages', id);
-      await updateDoc(messageRef, { deleted: true, text: null, image: null, replyTo: null });
-    } catch (e) {
-      alert('মেসেজ ডিলিট করতে সমস্যা হয়েছে!');
-      console.error(e);
-    }
-  }
-
-  // মেসেজ ক্যাশ - রিপ্লাই দেখানোর জন্য
-  const messagesCache = {};
-
-  // রিয়েলটাইম মেসেজ লোড
-  const q = query(collection(db, "messages"), orderBy("timestamp"));
-
-  onSnapshot(q, (snapshot) => {
+  onSnapshot(messagesQuery, (snap) => {
     chatArea.innerHTML = '';
-    snapshot.forEach(docSnap => {
-      const msg = docSnap.data();
-      const id = docSnap.id;
-      messagesCache[id] = msg;
+    // first cache all docs so replyTo can show text
+    snap.forEach(docSnap => {
+      messagesCache[docSnap.id] = docSnap.data();
     });
-    // আবার রেন্ডার করি
-    snapshot.forEach(docSnap => {
-      const msg = docSnap.data();
+    // then render
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
       const id = docSnap.id;
-      chatArea.appendChild(renderMessage(msg, id));
+      const el = renderMessage(id, data);
+      chatArea.appendChild(el);
     });
+    // auto scroll to bottom
     chatArea.scrollTop = chatArea.scrollHeight;
+    updateSendBtnState();
   });
-</script>
 
+  // helper: update send btn state initially
+  updateSendBtnState();
+
+  // optional: client-side reduce image size (not implemented here). If very large images cause failures,
+  // consider resizing using canvas before converting to base64.
+
+  // end of script
+</script>
 </body>
 </html>
